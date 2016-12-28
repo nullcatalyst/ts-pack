@@ -1,0 +1,20 @@
+{
+  "name": "tsunami",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Scott Bennett <scottbennett912@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^2.1.4"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.35",
+    "@types/node": "^6.0.54",
+    "mocha": "^3.2.0",
+    "tspoon": "^1.0.241"
+  }
+}
