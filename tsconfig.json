@@ -3,6 +3,9 @@
     "compilerOptions": {
         "baseUrl": "./src",
         "outDir": "./lib",
+        "lib": [
+            "es2016"
+        ],
         "sourceMap": true
     }
 }

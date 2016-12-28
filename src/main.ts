@@ -1,30 +1,11 @@
+import * as path from 'path';
 import * as ts from 'typescript';
 import * as tspoon from 'tspoon';
+import { resolveModule, transpile } from './util/transpile';
 
-const SRC = `
-import * as fs from 'fs';
-export const s = { hello: "world" }, z = 0;
-const r = 1;
-function test1() { return test2(); }
-function test2() { const r = 4; return r; }
-`;
+const resolvedModulePath = resolveModule(path.resolve('./demo/one'));
+const output = transpile(resolvedModulePath);
 
-let config: tspoon.TranspilerConfig = {
-    sourceFileName: 'test.ts',
-    compilerOptions: {
-        module: ts.ModuleKind.CommonJS,
-        target: ts.ScriptTarget.ES5,
-    },
-    visitors: [
-        // require('./visitors/load-imports'),
-        require('./visitors/cache-vars'),
-        require('./visitors/cache-funcs'),
-        require('./visitors/change-ids'),
-        require('./visitors/remove-export'),
-    ],
-};
-
-let transpilerOut = tspoon.transpile(SRC, config);
-console.log(transpilerOut.code);
+console.log(output.code);
 
 process.exit(0);

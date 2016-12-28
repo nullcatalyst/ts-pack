@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import * as tspoon from 'tspoon';
-import { addSourceFileIdentifier } from '../util/source-file-ids';
+import { addSourceFileIdentifier } from '../util/source-file';
 
 export = {
     filter: function filter(node: ts.Node) {

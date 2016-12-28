@@ -11,7 +11,7 @@
             "program": "${workspaceRoot}/src/main.ts",
             "cwd": "${workspaceRoot}",
             "outFiles": [
-                "${workspaceRoot}/lib/*"
+                "${workspaceRoot}/lib/**"
             ],
             "sourceMaps": true
         },
