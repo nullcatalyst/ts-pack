@@ -1,22 +1,11 @@
 import * as ts from 'typescript';
 import * as tspoon from 'tspoon';
+import VISITORS from '../visitors';
 
 const COMPILER_OPTIONS = {
     module: ts.ModuleKind.CommonJS,
     target: ts.ScriptTarget.ES5,
 };
-
-const VISITORS = [
-    // require('../visitors/debug'),
-    require('../visitors/load-imports'),
-    require('../visitors/load-exports'),
-    require('../visitors/cache-vars'),
-    require('../visitors/cache-funcs'),
-    require('../visitors/cache-classes'),
-    require('../visitors/change-import-props'),
-    require('../visitors/change-ids'),
-    require('../visitors/remove-export'),
-];
 
 const MODULE_HOST = {
     fileExists: ts.sys.fileExists,

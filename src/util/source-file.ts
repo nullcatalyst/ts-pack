@@ -77,31 +77,37 @@ export function getId(sourceFile: ts.SourceFile, id: string, property?: string):
 export function addImportFile(sourceFile: ts.SourceFile, moduleName: string, importedAs?: string | [string, string][]): tspoon.TranspilerOutput | undefined {
     const _sourceFile = extendSourceFile(sourceFile);
     const resolvedModulePath = resolveModule(moduleName, _sourceFile.fileName);
-    const output = importSourceFile(_sourceFile, resolvedModulePath);
 
-    if (typeof importedAs === 'string') {
-        _sourceFile.$ids[importedAs] = _sourceFile.$imports[resolvedModulePath];
-    } else if (typeof importedAs === 'object') {
-        importedAs.forEach(importedProperty => {
-            _sourceFile.$ids[importedProperty[1]] = _sourceFile.$imports[resolvedModulePath][importedProperty[0]];
-        });
+    if (resolvedModulePath) {
+        const output = importSourceFile(_sourceFile, resolvedModulePath);
+
+        if (typeof importedAs === 'string') {
+            _sourceFile.$ids[importedAs] = _sourceFile.$imports[resolvedModulePath];
+        } else if (typeof importedAs === 'object') {
+            importedAs.forEach(importedProperty => {
+                _sourceFile.$ids[importedProperty[1]] = _sourceFile.$imports[resolvedModulePath][importedProperty[0]];
+            });
+        }
+
+        return output;
     }
-
-    return output;
 }
 
 export function addExportFile(sourceFile: ts.SourceFile, moduleName: string, exportedProps?: [string, string][]): tspoon.TranspilerOutput | undefined {
     const _sourceFile = extendSourceFile(sourceFile);
     const resolvedModulePath = resolveModule(moduleName, _sourceFile.fileName);
-    const output = importSourceFile(_sourceFile, resolvedModulePath);
 
-    if (!exportedProps) {
-        Object.assign(_sourceFile.$exports, _sourceFile.$imports[resolvedModulePath]);
-    } else {
-        exportedProps.forEach(([ exportedProp, exportedPropAs ]) => {
-            _sourceFile.$exports[exportedPropAs] = _sourceFile.$imports[resolvedModulePath][exportedProp];
-        });
+    if (resolvedModulePath) {
+        const output = importSourceFile(_sourceFile, resolvedModulePath);
+
+        if (!exportedProps) {
+            Object.assign(_sourceFile.$exports, _sourceFile.$imports[resolvedModulePath]);
+        } else {
+            exportedProps.forEach(([ exportedProp, exportedPropAs ]) => {
+                _sourceFile.$exports[exportedPropAs] = _sourceFile.$imports[resolvedModulePath][exportedProp];
+            });
+        }
+
+        return output;
     }
-
-    return output;
 }

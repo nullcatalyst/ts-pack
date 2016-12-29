@@ -2,7 +2,7 @@ import * as ts from 'typescript';
 import * as tspoon from 'tspoon';
 import { addId } from '../util/source-file';
 
-export = {
+const impl: tspoon.Visitor = {
     filter: function filter(node: ts.Node) {
         return node.kind === ts.SyntaxKind.ClassDeclaration
             && node.parent.kind === ts.SyntaxKind.SourceFile;
@@ -12,4 +12,6 @@ export = {
 
         addId(node.getSourceFile(), node.name.getText(), exported);
     }
-} as tspoon.Visitor;
+};
+
+export default impl;

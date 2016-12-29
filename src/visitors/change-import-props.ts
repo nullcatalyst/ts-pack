@@ -2,7 +2,7 @@ import * as ts from 'typescript';
 import * as tspoon from 'tspoon';
 import { getId } from '../util/source-file';
 
-export = {
+const impl: tspoon.Visitor = {
     filter: function filter(node: ts.Node) {
         return node.kind === ts.SyntaxKind.PropertyAccessExpression
             && (node as ts.PropertyAccessExpression).expression.kind === ts.SyntaxKind.Identifier;
@@ -16,4 +16,6 @@ export = {
             context.replace(node.getStart(), node.getEnd(), actualProperty);
         }
     }
-} as tspoon.Visitor;
+};
+
+export default impl;

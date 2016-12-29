@@ -2,6 +2,6 @@ export function Three() {
     return 3;
 }
 
-export class ThreeClass {
+export default class ThreeClass {
     Three: string;
 }

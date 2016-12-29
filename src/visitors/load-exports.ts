@@ -2,7 +2,7 @@ import * as ts from 'typescript';
 import * as tspoon from 'tspoon';
 import { addExportFile } from '../util/source-file';
 
-export = {
+const impl: tspoon.Visitor = {
     filter: function filter(node: ts.Node) {
         return node.kind === ts.SyntaxKind.ExportDeclaration;
     },
@@ -30,4 +30,6 @@ export = {
         // Remove the export
         context.replace(node.getStart(), node.getEnd(), '');
     }
-} as tspoon.Visitor;
+};
+
+export default impl;

@@ -2,7 +2,7 @@ import * as ts from 'typescript';
 import * as tspoon from 'tspoon';
 import { getSyntaxKindName } from '../util/syntax-kind';
 
-export = {
+const impl: tspoon.Visitor = {
     filter: function filter(node: ts.Node) {
         // Print the start of a file
         if (node.kind === ts.SyntaxKind.SourceFile) {
@@ -17,4 +17,6 @@ export = {
     visit: function visit(node: ts.FunctionDeclaration, context: tspoon.VisitorContext) {
         
     }
-} as tspoon.Visitor;
+};
+
+export default impl;
