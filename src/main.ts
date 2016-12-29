@@ -3,10 +3,13 @@ import * as ts from 'typescript';
 import * as tspoon from 'tspoon';
 import { resolveModule, transpile } from './util/transpile';
 
-const SRC_FILE = './demo/one';
-// const SRC_FILE = './src/main';
+// const SRC_FILE = './demo/one';
+const SRC_FILE = './src/main';
+const filePath = path.resolve(SRC_FILE);
 
-const resolvedModulePath = resolveModule(path.resolve(SRC_FILE));
+console.log(filePath);
+
+const resolvedModulePath = resolveModule(filePath);
 const output = transpile(resolvedModulePath);
 
 console.log(output.code);

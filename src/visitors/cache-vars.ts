@@ -8,10 +8,11 @@ const impl: tspoon.Visitor = {
             && node.parent.kind === ts.SyntaxKind.SourceFile;
     },
     visit: function visit(node: ts.VariableStatement, context: tspoon.VisitorContext) {
-        const exported = node.modifiers && node.modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword);
+        const _export = node.modifiers && node.modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword);
+        const _default = node.modifiers && node.modifiers.some(m => m.kind === ts.SyntaxKind.DefaultKeyword);
 
         node.declarationList.declarations.forEach(decl => {
-            addId(node.getSourceFile(), decl.name.getText(), exported);
+            addId(node.getSourceFile(), decl.name.getText(), _export, _default);
         });
     }
 };

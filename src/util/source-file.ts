@@ -40,7 +40,7 @@ function importSourceFile(_sourceFile: SourceFileExt, resolvedModulePath: string
         // The file has already been imported, no need to import it again
     } else {
         // The file has not yet been imported, so import it here
-        const output = transpile(resolvedModulePath);
+        const output = transpile(resolvedModulePath, _sourceFile);
         const _importedFile = extendSourceFile(output.ast);
 
         _sourceFile.$imports[_importedFile.fileName] = _importedFile.$exports;
@@ -52,14 +52,15 @@ function importSourceFile(_sourceFile: SourceFileExt, resolvedModulePath: string
     }
 }
 
-export function addId(sourceFile: ts.SourceFile, id: string, exported: boolean): void {
+export function addId(sourceFile: ts.SourceFile, id: string, _export: boolean, _default: boolean): void {
     const _sourceFile = extendSourceFile(sourceFile);
     const fileName = _sourceFile.fileName;
-    const prefix = exported ? '_pbl__' : '_prv__';
+    const prefix = _export ? '_pbl__' : '_prv__';
     const postfix = '__' + fileName.substr(0, fileName.lastIndexOf('.')).replace(/[^a-z0-9]/gmi, '_');
 
     _sourceFile.$ids[id] = prefix + id + postfix;
-    if (exported) _sourceFile.$exports[id] = prefix + id + postfix;
+    if (_export) _sourceFile.$exports[id] = prefix + id + postfix;
+    if (_default) _sourceFile.$exports[''] = prefix + id + postfix;
 }
 
 export function getId(sourceFile: ts.SourceFile, id: string, property?: string): string | undefined {
@@ -74,7 +75,7 @@ export function getId(sourceFile: ts.SourceFile, id: string, property?: string):
     }
 }
 
-export function addImportFile(sourceFile: ts.SourceFile, moduleName: string, importedAs?: string | [string, string][]): tspoon.TranspilerOutput | undefined {
+export function addImportFile(sourceFile: ts.SourceFile, moduleName: string, importedAs: string | [string, string][], _default: boolean): tspoon.TranspilerOutput | undefined {
     const _sourceFile = extendSourceFile(sourceFile);
     const resolvedModulePath = resolveModule(moduleName, _sourceFile.fileName);
 
@@ -82,7 +83,11 @@ export function addImportFile(sourceFile: ts.SourceFile, moduleName: string, imp
         const output = importSourceFile(_sourceFile, resolvedModulePath);
 
         if (typeof importedAs === 'string') {
-            _sourceFile.$ids[importedAs] = _sourceFile.$imports[resolvedModulePath];
+            if (_default) {
+                _sourceFile.$ids[importedAs] = _sourceFile.$imports[resolvedModulePath][''];
+            } else {
+                _sourceFile.$ids[importedAs] = _sourceFile.$imports[resolvedModulePath];
+            }
         } else if (typeof importedAs === 'object') {
             importedAs.forEach(importedProperty => {
                 _sourceFile.$ids[importedProperty[1]] = _sourceFile.$imports[resolvedModulePath][importedProperty[0]];
@@ -90,6 +95,8 @@ export function addImportFile(sourceFile: ts.SourceFile, moduleName: string, imp
         }
 
         return output;
+    } else {
+        throw new Error();
     }
 }
 
@@ -109,5 +116,7 @@ export function addExportFile(sourceFile: ts.SourceFile, moduleName: string, exp
         }
 
         return output;
+    } else {
+        throw new Error();
     }
 }

@@ -8,9 +8,10 @@ const impl: tspoon.Visitor = {
             && node.parent.kind === ts.SyntaxKind.SourceFile;
     },
     visit: function visit(node: ts.FunctionDeclaration, context: tspoon.VisitorContext) {
-        const exported = node.modifiers && node.modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword);
+        const _export = node.modifiers && node.modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword);
+        const _default = node.modifiers && node.modifiers.some(m => m.kind === ts.SyntaxKind.DefaultKeyword);
 
-        addId(node.getSourceFile(), node.name.getText(), exported);
+        addId(node.getSourceFile(), node.name.getText(), _export, _default);
     }
 };
 

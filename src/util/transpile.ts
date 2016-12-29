@@ -13,16 +13,27 @@ const MODULE_HOST = {
 };
 
 export function resolveModule(moduleName: string, parentPath?: string): string | undefined {
+    if (moduleName[0] !== '.' && moduleName[0] !== '/') return;
+
     const resolvedModule = ts.resolveModuleName(moduleName, parentPath || '', COMPILER_OPTIONS, MODULE_HOST);
     return resolvedModule.resolvedModule && resolvedModule.resolvedModule.resolvedFileName;
 }
 
-export function transpile(modulePath: string): tspoon.TranspilerOutput {
+export function transpile(modulePath: string, prevSourceFile?: ts.SourceFile): tspoon.TranspilerOutput {
     const fileContents = ts.sys.readFile(modulePath);
     const config: tspoon.TranspilerConfig = {
         sourceFileName: modulePath,
         compilerOptions: COMPILER_OPTIONS,
         visitors: VISITORS,
+        preTranspile: ast => {
+            if (prevSourceFile) {
+                (ast as any).$imports = (prevSourceFile as any).$imports;
+            } else {
+                (ast as any).$imports = {};
+            }
+
+            (ast as any).$imports[modulePath] = {};
+        },
     };
 
     return tspoon.transpile(fileContents, config);

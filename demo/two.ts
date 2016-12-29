@@ -1,6 +1,4 @@
-export { Three as Two } from './three';
-
-export class TwoClass {
+export default class TwoClass {
     Two() {
         return 2;
     }
