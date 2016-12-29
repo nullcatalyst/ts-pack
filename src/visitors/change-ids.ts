@@ -6,6 +6,8 @@ export = {
     filter: function filter(node: ts.Node) {
         return node.kind === ts.SyntaxKind.Identifier
             && node.parent.kind !== ts.SyntaxKind.ImportSpecifier
+            && node.parent.kind !== ts.SyntaxKind.MethodDeclaration
+            && node.parent.kind !== ts.SyntaxKind.PropertyDeclaration
             && node.parent.kind !== ts.SyntaxKind.PropertyAccessExpression;
     },
     visit: function visit(node: ts.VariableStatement, context: tspoon.VisitorContext) {

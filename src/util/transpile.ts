@@ -7,11 +7,12 @@ const COMPILER_OPTIONS = {
 };
 
 const VISITORS = [
-    require('../visitors/debug'),
+    // require('../visitors/debug'),
     require('../visitors/load-imports'),
     require('../visitors/load-exports'),
     require('../visitors/cache-vars'),
     require('../visitors/cache-funcs'),
+    require('../visitors/cache-classes'),
     require('../visitors/change-import-props'),
     require('../visitors/change-ids'),
     require('../visitors/remove-export'),
