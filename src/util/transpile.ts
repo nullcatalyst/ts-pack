@@ -8,6 +8,7 @@ const COMPILER_OPTIONS = {
 
 const VISITORS = [
     require('../visitors/load-imports'),
+    require('../visitors/import-export'),
     require('../visitors/cache-vars'),
     require('../visitors/cache-funcs'),
     require('../visitors/change-import-props'),

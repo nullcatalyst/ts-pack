@@ -8,8 +8,6 @@ export = {
             && (node as ts.PropertyAccessExpression).expression.kind === ts.SyntaxKind.Identifier;
     },
     visit: function visit(node: ts.PropertyAccessExpression, context: tspoon.VisitorContext) {
-        // console.log(node);
-
         const importedAs = node.expression.getText();
         const property = node.name.getText();
 

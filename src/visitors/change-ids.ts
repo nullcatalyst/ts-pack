@@ -5,7 +5,6 @@ import { getSourceFileIdentifier } from '../util/source-file';
 export = {
     filter: function filter(node: ts.Node) {
         return node.kind === ts.SyntaxKind.Identifier
-            // && node.parent.kind !== ts.SyntaxKind.PropertyAccessExpression
             && node.parent.kind !== ts.SyntaxKind.ImportSpecifier;
     },
     visit: function visit(node: ts.VariableStatement, context: tspoon.VisitorContext) {

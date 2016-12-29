@@ -1,3 +1,3 @@
-export function Null() {
-    return null;
+export function Three() {
+    return 3;
 }

@@ -6,5 +6,5 @@ export function fn1() {
 }
 
 function fn2() {
-    return three.Null();
+    return three.Three();
 }

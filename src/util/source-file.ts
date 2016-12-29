@@ -43,7 +43,7 @@ export function getSourceFileIdentifier(sourceFile: ts.SourceFile, id: string): 
     }
 }
 
-export function addSourceFileImport(sourceFile: ts.SourceFile, moduleName: string, importedAs?: string | [string, string][]): tspoon.TranspilerOutput | undefined {
+export function addSourceFileImport(sourceFile: ts.SourceFile, moduleName: string, importedAs?: string | [string, string][], exported?: boolean): tspoon.TranspilerOutput | undefined {
     const _sourceFile = (sourceFile as SourceFileExt);
     const resolvedModulePath = resolveModule(moduleName, sourceFile.fileName);
 
@@ -51,13 +51,19 @@ export function addSourceFileImport(sourceFile: ts.SourceFile, moduleName: strin
     if (!_sourceFile.$imports) _sourceFile.$imports = {};
     if (!_sourceFile.$importedAs) _sourceFile.$importedAs = {};
 
-    function addImportAs(imports: MapLike<string>) {
-        if (typeof importedAs === 'string') {
-            _sourceFile.$importedAs[importedAs] = imports;
-        } else if (Array.isArray(importedAs)) {
-            importedAs.forEach(importedProperty => {
-                _sourceFile.$ids[importedProperty[1]] = imports[importedProperty[0]];
-            });
+    function addImportAs(imports: MapLike<string>, exported?: boolean) {
+        if (importedAs) {
+            if (typeof importedAs === 'string') {
+                _sourceFile.$importedAs[importedAs] = imports;
+
+                if (exported) Object.assign(_sourceFile.$ids, imports);
+            } else if (Array.isArray(importedAs)) {
+                importedAs.forEach(importedProperty => {
+                    _sourceFile.$ids[importedProperty[1]] = imports[importedProperty[0]];
+
+                    // if (exported) Object.assign(_sourceFile.$ids, imports);
+                });
+            }
         }
     }
 
@@ -65,9 +71,7 @@ export function addSourceFileImport(sourceFile: ts.SourceFile, moduleName: strin
         // The file has already been imported, no need to import it again
 
         // Add a way to reference the previously imported file
-        if (importedAs) {
-            addImportAs(_sourceFile.$imports[resolvedModulePath]);
-        }
+        addImportAs(_sourceFile.$imports[resolvedModulePath]);
     } else {
         // The file has not yet been imported, so import it here
         const output = transpile(resolvedModulePath);
@@ -76,9 +80,7 @@ export function addSourceFileImport(sourceFile: ts.SourceFile, moduleName: strin
 
         _sourceFile.$imports[importedFile.fileName] = _importedFile.$ids;
 
-        if (importedAs) {
-            addImportAs(_importedFile.$ids);
-        }
+        addImportAs(_importedFile.$ids);
 
         // Copy any imports from the imported file down into the parent file
         Object.assign(_sourceFile.$imports, _importedFile.$imports);
