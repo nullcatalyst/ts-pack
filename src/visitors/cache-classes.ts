@@ -1,17 +1,17 @@
 import * as ts from 'typescript';
 import * as tspoon from 'tspoon';
-import { addId } from '../util/source-file';
+import { VisitorContext, Context } from '../context';
 
 const impl: tspoon.Visitor = {
     filter: function filter(node: ts.Node) {
         return node.kind === ts.SyntaxKind.ClassDeclaration
             && node.parent.kind === ts.SyntaxKind.SourceFile;
     },
-    visit: function visit(node: ts.ClassDeclaration, context: tspoon.VisitorContext) {
+    visit: function visit(node: ts.ClassDeclaration, context: VisitorContext) {
         const _export = node.modifiers && node.modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword);
         const _default = node.modifiers && node.modifiers.some(m => m.kind === ts.SyntaxKind.DefaultKeyword);
 
-        addId(node.getSourceFile(), node.name.getText(), _export, _default);
+        context.custom.addId(node.name.getText(), _export, _default);
     }
 };
 
