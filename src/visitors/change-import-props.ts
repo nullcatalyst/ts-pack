@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import * as tspoon from 'tspoon';
-import { getSourceFileImport } from '../util/source-file';
+import { getId } from '../util/source-file';
 
 export = {
     filter: function filter(node: ts.Node) {
@@ -11,7 +11,7 @@ export = {
         const importedAs = node.expression.getText();
         const property = node.name.getText();
 
-        const actualProperty = getSourceFileImport(node.getSourceFile(), importedAs, property);
+        const actualProperty = getId(node.getSourceFile(), importedAs, property);
         if (actualProperty) {
             context.replace(node.getStart(), node.getEnd(), actualProperty);
         }

@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import * as tspoon from 'tspoon';
 import { transpile } from '../util/transpile';
-import { addSourceFileImport } from '../util/source-file';
+import { addImportFile } from '../util/source-file';
 
 export = {
     filter: function filter(node: ts.Node) {
@@ -16,7 +16,7 @@ export = {
             // import * as <importedAs> from <modulePath>
             let importedAs = node.importClause.namedBindings.name.getText();
 
-            const output = addSourceFileImport(node.getSourceFile(), moduleName, importedAs);
+            const output = addImportFile(node.getSourceFile(), moduleName, importedAs);
             if (output) {
                 context.replace(node.getStart(), node.getEnd(), output.code);
                 return;
@@ -30,7 +30,7 @@ export = {
                 return [importedName, importedAs];
             });
 
-            const output = addSourceFileImport(node.getSourceFile(), moduleName, importedProperties);
+            const output = addImportFile(node.getSourceFile(), moduleName, importedProperties);
             if (output) {
                 context.replace(node.getStart(), node.getEnd(), output.code);
                 return;

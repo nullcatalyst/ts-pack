@@ -1,10 +1,5 @@
 import * as two from './two';
-import * as three from './three';
+import { Two } from './two';
 
-export function fn1() {
-    return two.passThree();
-}
-
-function fn2() {
-    return three.Three();
-}
+Two();
+two.Two();

@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import * as tspoon from 'tspoon';
-import { addSourceFileIdentifier } from '../util/source-file';
+import { addId } from '../util/source-file';
 
 export = {
     filter: function filter(node: ts.Node) {
@@ -10,6 +10,6 @@ export = {
     visit: function visit(node: ts.FunctionDeclaration, context: tspoon.VisitorContext) {
         const exported = node.modifiers && node.modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword);
 
-        addSourceFileIdentifier(node.getSourceFile(), node.name.getText(), exported);
+        addId(node.getSourceFile(), node.name.getText(), exported);
     }
 } as tspoon.Visitor;
