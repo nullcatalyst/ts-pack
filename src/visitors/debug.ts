@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import * as tspoon from 'tspoon';
-import getSyntaxKindName from '../util/syntax-kind';
+import { getSyntaxKindName } from '../util/syntax-kind';
 
 const impl: tspoon.Visitor = {
     filter: function filter(node: ts.Node) {

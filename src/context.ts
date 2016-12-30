@@ -1,6 +1,7 @@
 import * as ts from 'typescript';
 import * as tspoon from 'tspoon';
-import resolveModule from './util/resolve-module';
+import { resolveModule } from './util/resolve-module';
+import { CompilerOptions } from './util/compiler-options';
 import VISITORS from './visitors';
 
 interface MapLike<T> { [id: string]: T }
@@ -16,15 +17,14 @@ export interface TranspilerOutput extends tspoon.TranspilerOutput {
     custom?: Context;
 }
 
-const COMPILER_OPTIONS = {
-    module: ts.ModuleKind.CommonJS,
-    target: ts.ScriptTarget.ES2016,
-};
-
 export class Context {
+    /** The compiler options to pass through to typescript when loading any additional modules */
+    private options: CompilerOptions;
+
     /** The source file that this context was created by/for */
     private sourceFile: ts.SourceFile;
 
+    /** A reference to the parent Context, the Context that imported this one */
     private parent?: Context;
 
     /**
@@ -44,7 +44,8 @@ export class Context {
      */
     private imports: MapLike<Context>;
 
-    constructor(sourceFile: ts.SourceFile, parent?: Context) {
+    constructor(options: CompilerOptions, sourceFile: ts.SourceFile, parent?: Context) {
+        this.options    = options;
         this.sourceFile = sourceFile;
         this.parent     = parent;
         this.ids        = {};
@@ -88,16 +89,16 @@ export class Context {
         }
     }
 
-    static transpile(modulePath: string, parentContext?: Context): TranspilerOutput {
+    static transpile(options: CompilerOptions, modulePath: string, parentContext?: Context): TranspilerOutput {
         let custom: Context;
 
         const fileContents = ts.sys.readFile(modulePath);
         const config: tspoon.TranspilerConfig = {
             sourceFileName: modulePath,
-            compilerOptions: COMPILER_OPTIONS,
+            compilerOptions: options,
             visitors: VISITORS,
             onBeforeTranspile: (ast: ts.SourceFile, context: VisitorContext) => {
-                custom = new Context(ast, parentContext);
+                custom = new Context(options, ast, parentContext);
                 context.custom = custom;
             },
         };
@@ -112,14 +113,7 @@ export class Context {
             // The file has already been imported, no need to import it again
         } else {
             // The file has not yet been imported, so import it here
-            const output = Context.transpile(resolvedModulePath, this);
-
-            // this.imports[output.custom.sourceFile.fileName] = output.custom.exports;
-
-            // Copy any imports from the imported file down into the parent file
-            // Object.assign(_sourceFile.$imports, _importedFile.$imports);
-
-            return output;
+            return Context.transpile(this.options, resolvedModulePath, this);
         }
     }
 
@@ -155,7 +149,11 @@ export class Context {
             const output = this.importModule(resolvedModulePath);
 
             if (!exportedProps) {
-                Object.assign(this.exports, this.imports[resolvedModulePath].exports);
+                // Object.assign(this.exports, this.imports[resolvedModulePath].exports);
+
+                for (let property in this.imports[resolvedModulePath].exports) {
+                    this.exports[property] = this.imports[resolvedModulePath].exports[property];
+                }
             } else {
                 exportedProps.forEach(([ exportedProp, exportedPropAs ]) => {
                     this.exports[exportedPropAs] = this.imports[resolvedModulePath].exports[exportedProp];

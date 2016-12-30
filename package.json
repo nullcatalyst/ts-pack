@@ -1,20 +1,28 @@
 {
   "name": "tsunami",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "bin": {
+    "tsunami": "bin/tsunami"
+  },
   "scripts": {
+    "start": "bin/tsunami",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Scott Bennett <scottbennett912@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "bluebird": "^3.4.7",
+    "node-getopt": "^0.2.3",
+    "tspoon": "^1.0.241",
     "typescript": "^2.1.4"
   },
   "devDependencies": {
+    "@types/bluebird": "^3.0.37",
     "@types/mocha": "^2.2.35",
     "@types/node": "^6.0.54",
-    "mocha": "^3.2.0",
-    "tspoon": "^1.0.241"
+    "@types/node-getopt": "^0.2.29",
+    "mocha": "^3.2.0"
   }
 }

@@ -10,6 +10,9 @@
             "name": "Launch Program",
             "program": "${workspaceRoot}/src/main.ts",
             "cwd": "${workspaceRoot}",
+            "args": [
+                "../demo/one"
+            ],
             "outFiles": [
                 "${workspaceRoot}/lib/**"
             ],

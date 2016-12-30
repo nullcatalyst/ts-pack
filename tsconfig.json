@@ -1,11 +1,15 @@
 {
-    "compileOnSave": true,
     "compilerOptions": {
-        "baseUrl": "./src",
-        "outDir": "./lib",
+        "baseUrl": "src",
+        "rootDir": "src",
+        "outDir": "lib",
         "lib": [
             "es2016"
         ],
         "sourceMap": true
-    }
+    },
+    "exclude": [
+        "node_modules",
+        "demo"
+    ]
 }

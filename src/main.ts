@@ -1,20 +1,50 @@
 import * as fs from 'fs';
-import * as path from 'path';
-import * as ts from 'typescript';
-import * as tspoon from 'tspoon';
-import resolveModule from './util/resolve-module';
-import { Context } from './context';
+import * as Promise from 'bluebird';
+import Getopt = require('node-getopt');
+const tsunami = require('./index');
 
-// const SRC_FILE = './demo/one';
-const SRC_FILE = './src/main';
-const filePath = path.resolve(SRC_FILE);
+const writeFile = Promise.promisify(fs.writeFile);
 
-console.log(filePath);
+const opt = new Getopt([
+        ['h', 'help',        'Print this message.'],
+        ['o', 'outFile=ARG', 'The output file.'],
+        ['p', 'project=ARG', 'Compile the project in the given directory.'],
+        ['v', 'version',     'Print the compiler\'s version.'],
+    ])
+    .bindHelp()     // bind option 'help' to default action
+    .parseSystem(); // parse command line
 
-const resolvedModulePath = resolveModule(filePath);
-const output = Context.transpile(resolvedModulePath);
+for (let option in opt.options) {
+    switch (option) {
+        case 'version':
+            displayVersion();
+            process.exit(0);
+    }
+}
 
-// console.log(output.code);
-fs.writeFileSync(path.resolve('./output.js'), output.code, 'utf-8');
+if (opt.argv.length > 0) {
+    tsunami.compileFile(opt.argv[0])
+        .then((output: string) => {
+            if (opt.options['outFile']) {
+                fs.writeFileSync(opt.options['outFile'], output, { 'encoding': 'utf8' });
+            } else {
+                // console.log(output)
 
-process.exit(0);
+                // console.log appears to stop printing long strings after a certain amount of characters
+                // so split the output and print line by line
+                for (let line of output.split('\n')) {
+                    console.log(line);
+                }
+            }
+        })
+        .catch((error: Error) => {
+            console.error(error.message);
+        });
+}
+
+function displayVersion(): void {
+    const ts = require('typescript');
+    const _package = require('../package.json');
+
+    console.info(`Version ${_package.version} [using typescript ${ts.version}]`)
+}

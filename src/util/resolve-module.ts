@@ -10,7 +10,7 @@ const MODULE_HOST = {
     readFile: ts.sys.readFile,
 };
 
-export default function resolveModule(moduleName: string, parentPath?: string): string | undefined {
+export function resolveModule(moduleName: string, parentPath?: string): string | undefined {
     if (moduleName[0] !== '.' && moduleName[0] !== '/') return;
 
     parentPath = parentPath || '';
