@@ -1,9 +1,8 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import * as Promise from 'bluebird';
 import Getopt = require('node-getopt');
 const tsunami = require('./index');
-
-const writeFile = Promise.promisify(fs.writeFile);
 
 const opt = new Getopt([
         ['h', 'help',        'Print this message.'],
@@ -23,19 +22,33 @@ for (let option in opt.options) {
 }
 
 if (opt.argv.length > 0) {
-    tsunami.compileFile(opt.argv[0])
-        .then((output: string) => {
-            if (opt.options['outFile']) {
-                fs.writeFileSync(opt.options['outFile'], output, { 'encoding': 'utf8' });
-            } else {
-                // console.log(output)
+    let inFile = opt.argv[0];
 
-                // console.log appears to stop printing long strings after a certain amount of characters
-                // so split the output and print line by line
-                for (let line of output.split('\n')) {
-                    console.log(line);
+    let compilerOptions: any;
+    let tsconfig = opt.options['project'];
+    if (tsconfig) {
+        const stats = fs.lstatSync(tsconfig);
+        if (stats.isDirectory()) {
+            tsconfig = path.join(tsconfig, 'tsconfig.json');
+        }
+
+        const tsconfigJson = require(tsconfig);
+        compilerOptions = tsconfigJson['compilerOptions'];
+    }
+
+    tsunami.compile(inFile, compilerOptions)
+        .then((output: string) => {
+            let outFile = opt.options['outFile'];
+
+            if (!outFile) {
+                if (inFile.endsWith('.ts')) {
+                    outFile = inFile.slice(0, -3) + '.js';
+                } else {
+                    outFile = inFile + '.js';
                 }
             }
+
+            fs.writeFileSync(outFile, output, { 'encoding': 'utf8' });
         })
         .catch((error: Error) => {
             console.error(error.message);

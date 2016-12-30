@@ -7,22 +7,9 @@ import { resolveModule } from './util/resolve-module';
 import { CompilerOptions } from './util/compiler-options';
 import { Context } from './context';
 
-const fileExists = Promise.promisify(fs.exists);
-const readFile = Promise.promisify(fs.readFile);
+const fileExists = Promise.promisify<boolean, string>(fs.exists);
 
-export function compileProject(project: string): Promise<string>;
-export function compileProject(options: CompilerOptions): Promise<string>;
-export function compileProject(options: string | CompilerOptions): Promise<string> {
-    if (typeof options === 'string') {
-
-    } else {
-        return new Promise<string>((resolve, reject) => {
-
-        });
-    }
-};
-
-export function compileFile(fileName: string, options?: CompilerOptions): Promise<string> {
+export function compile(fileName: string, options?: CompilerOptions): Promise<string> {
     // Use the default options if none were supplied
     options = options || {};
 

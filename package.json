@@ -11,7 +11,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Scott Bennett <scottbennett912@gmail.com>",
-  "license": "MIT",
+  "license": "ISC",
+  "files": [
+    "bin",
+    "lib"
+  ],
   "dependencies": {
     "bluebird": "^3.4.7",
     "node-getopt": "^0.2.3",

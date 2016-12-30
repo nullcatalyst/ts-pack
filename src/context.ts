@@ -7,7 +7,7 @@ import VISITORS from './visitors';
 interface MapLike<T> { [id: string]: T }
 
 /** import { string[0] as string[1] } from <module> */
-type ImportedPropertyName = [string, string];
+export type ImportedPropertyName = [string, string];
 
 export interface VisitorContext extends tspoon.VisitorContext {
     custom?: Context;

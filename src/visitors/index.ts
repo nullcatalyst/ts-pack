@@ -1,3 +1,5 @@
+import * as tspoon from 'tspoon';
+
 import debug             from '../visitors/debug';
 import cacheVars         from '../visitors/cache-vars';
 import cacheFuncs        from '../visitors/cache-funcs';
@@ -9,7 +11,7 @@ import changeImportProps from '../visitors/change-import-props';
 import changeIds         from '../visitors/change-ids';
 import removeExport      from '../visitors/remove-export';
 
-const visitors = [
+const visitors: tspoon.Visitor[] = [
     // debug,
     cacheVars,
     cacheFuncs,
