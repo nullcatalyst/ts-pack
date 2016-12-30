@@ -7,21 +7,35 @@ import { resolveModule } from './util/resolve-module';
 import { CompilerOptions } from './util/compiler-options';
 import { Context } from './context';
 
-const fileExists = Promise.promisify<boolean, string>(fs.exists);
+export { CompilerOptions } from './util/compiler-options';
 
-export function compile(fileName: string, options?: CompilerOptions): Promise<string> {
+const fileStats = Promise.promisify<fs.Stats, string>(fs.lstat);
+
+export function compileFile(fileName: string, options?: CompilerOptions): Promise<string> {
     // Use the default options if none were supplied
     options = options || {};
 
     const filePath = path.resolve(fileName);
 
-    return fileExists(filePath)
-        .then((exists: boolean) => {
-            if (exists) {
+    return fileStats(filePath)
+        .then((stats: fs.Stats) => {
+            if (stats.isFile()) {
                 const output = Context.transpile(options, filePath);
                 return output.code;
             } else {
                 throw new Error(`File "${filePath}" not found`);
             }
+        });
+}
+
+
+export function compile(fileName: string, contents: string, options?: CompilerOptions): Promise<string> {
+    // Use the default options if none were supplied
+    options = options || {};
+
+    fileName = path.resolve(fileName);
+    return new Promise<string>((resolve, reject) => {
+            const output = Context.transpile(options, fileName);
+            return output.code;
         });
 }

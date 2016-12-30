@@ -60,11 +60,15 @@ export class Context {
      * This can be overridden or swapped out if desired
      */
     mangleId(id: string, _export: boolean): string {
-        const fileName = this.sourceFile.fileName;
-        const prefix = _export ? '_pbl__' : '_prv__';
-        const postfix = '__' + fileName.substr(0, fileName.lastIndexOf('.')).replace(/[^a-z0-9]/gmi, '_');
+        if (this.options.mangleId) {
+            return this.options.mangleId(this.sourceFile.fileName, id, _export);
+        } else {
+            const fileName = this.sourceFile.fileName;
+            const prefix = _export ? '_pbl__' : '_prv__';
+            const postfix = '__' + fileName.substr(0, fileName.lastIndexOf('.')).replace(/[^a-z0-9]/gmi, '_');
 
-        return prefix + id + postfix;
+            return prefix + id + postfix;
+        }
     }
 
     addId(id: string, _export: boolean, _default: boolean): void {

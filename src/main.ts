@@ -36,7 +36,7 @@ if (opt.argv.length > 0) {
         compilerOptions = tsconfigJson['compilerOptions'];
     }
 
-    tsunami.compile(inFile, compilerOptions)
+    tsunami.compileFile(inFile, compilerOptions)
         .then((output: string) => {
             let outFile = opt.options['outFile'];
 
