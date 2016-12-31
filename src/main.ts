@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as Promise from 'bluebird';
 import Getopt = require('node-getopt');
-const tsunami = require('./index');
+import * as tsunami from './index';
 
 const opt = new Getopt([
         ['h', 'help',        'Print this message.'],

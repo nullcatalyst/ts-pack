@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "bin/tsunami",
-    "test": "mocha"
+    "test": "mocha",
+    "bootstrap": "bin/tsunami src/main.ts -o output.js"
   },
   "author": "Scott Bennett <scottbennett912@gmail.com>",
   "license": "ISC",

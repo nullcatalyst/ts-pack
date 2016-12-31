@@ -28,7 +28,6 @@ export function compileFile(fileName: string, options?: CompilerOptions): Promis
         });
 }
 
-
 export function compile(fileName: string, contents: string, options?: CompilerOptions): Promise<string> {
     // Use the default options if none were supplied
     options = options || {};
