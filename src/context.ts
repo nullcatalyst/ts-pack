@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import * as tspoon from 'tspoon';
+import * as tspoon from './tspoon';
 import { resolveModule } from './util/resolve-module';
 import { CompilerOptions } from './util/compiler-options';
 import VISITORS from './visitors';

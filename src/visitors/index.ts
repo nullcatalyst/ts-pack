@@ -1,4 +1,4 @@
-import * as tspoon from 'tspoon';
+import * as tspoon from '../tspoon';
 
 import debug             from '../visitors/debug';
 import cacheVars         from '../visitors/cache-vars';

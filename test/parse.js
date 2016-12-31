@@ -3,7 +3,7 @@ const tsunami = require('../lib/index');
 
 const COMPILER_OPTIONS = {
     mangleId: function (fileName, id, _export) {
-        return (_export ? 'export_' : '_') + id + ('_' + fileName.slice(-4, -3));
+        return (_export ? 'export_' : '_') + id + ('_' + fileName.slice(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.')));
     }
 };
 

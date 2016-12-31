@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import * as tspoon from 'tspoon';
+import * as tspoon from '../tspoon';
 import { getSyntaxKindName } from '../util/syntax-kind';
 
 const impl: tspoon.Visitor = {
