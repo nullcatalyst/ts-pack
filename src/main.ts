@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Promise from 'bluebird';
+import * as ts from 'typescript';
 import Getopt = require('node-getopt');
 import * as tsunami from './index';
 
@@ -13,50 +14,51 @@ const opt = new Getopt([
     .bindHelp()     // bind option 'help' to default action
     .parseSystem(); // parse command line
 
-for (let option in opt.options) {
-    switch (option) {
-        case 'version':
-            displayVersion();
-            process.exit(0);
-    }
-}
-
-if (opt.argv.length > 0) {
-    let inFile = opt.argv[0];
-
-    let compilerOptions: any;
-    let tsconfig = opt.options['project'];
-    if (tsconfig) {
-        const stats = fs.lstatSync(tsconfig);
-        if (stats.isDirectory()) {
-            tsconfig = path.join(tsconfig, 'tsconfig.json');
+if (opt) {
+    for (let option in opt.options) {
+        switch (option) {
+            case 'version':
+                displayVersion();
+                process.exit(0);
         }
-
-        const tsconfigJson = require(tsconfig);
-        compilerOptions = tsconfigJson['compilerOptions'];
     }
 
-    tsunami.compileFile(inFile, compilerOptions)
-        .then((output: string) => {
-            let outFile = opt.options['outFile'];
+    if (opt.argv.length > 0) {
+        let inFile = opt.argv[0];
 
-            if (!outFile) {
-                if (inFile.endsWith('.ts')) {
-                    outFile = inFile.slice(0, -3) + '.js';
-                } else {
-                    outFile = inFile + '.js';
-                }
+        let compilerOptions: any;
+        let tsconfig = opt.options['project'];
+        if (tsconfig) {
+            const stats = fs.lstatSync(tsconfig);
+            if (stats.isDirectory()) {
+                tsconfig = path.join(tsconfig, 'tsconfig.json');
             }
 
-            fs.writeFileSync(outFile, output, { 'encoding': 'utf8' });
-        })
-        .catch((error: Error) => {
-            console.error(error.message);
-        });
+            const tsconfigJson = require(tsconfig);
+            compilerOptions = tsconfigJson['compilerOptions'];
+        }
+
+        tsunami.compileFile(inFile, compilerOptions)
+            .then((output: string) => {
+                let outFile = opt.options['outFile'];
+
+                if (!outFile) {
+                    if (inFile.endsWith('.ts')) {
+                        outFile = inFile.slice(0, -3) + '.js';
+                    } else {
+                        outFile = inFile + '.js';
+                    }
+                }
+
+                fs.writeFileSync(outFile, output, { 'encoding': 'utf8' });
+            })
+            .catch((error: Error) => {
+                console.error(error.message);
+            });
+    }
 }
 
 function displayVersion(): void {
-    const ts = require('typescript');
     const _package = require('../package.json');
 
     console.info(`Version ${_package.version} [using typescript ${ts.version}]`)

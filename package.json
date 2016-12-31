@@ -9,7 +9,10 @@
   "scripts": {
     "start": "bin/tsunami",
     "test": "mocha",
-    "bootstrap": "bin/tsunami src/main.ts -o output.js"
+    "build": "npm run clean && npm run bootstrap && npm run compress",
+    "clean": "rm -rf lib index.js",
+    "bootstrap": "tsc -p . && bin/tsunami src/main.ts -o index.js",
+    "compress": "uglifyjs --compress --mangle --wrap=tsunami -o index.js -- index.js"
   },
   "author": "Scott Bennett <scottbennett912@gmail.com>",
   "license": "ISC",
@@ -23,7 +26,6 @@
     "magic-string": "^0.19.0",
     "node-getopt": "^0.2.3",
     "source-map": "^0.5.6",
-    "source-map-support": "^0.4.8",
     "typescript": "^2.1.4"
   },
   "devDependencies": {
@@ -33,6 +35,7 @@
     "@types/node": "^6.0.54",
     "@types/node-getopt": "^0.2.29",
     "@types/source-map": "^0.5.0",
-    "mocha": "^3.2.0"
+    "mocha": "^3.2.0",
+    "uglify-js": "^2.7.5"
   }
 }

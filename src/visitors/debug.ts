@@ -10,7 +10,11 @@ const impl: tspoon.Visitor = {
         }
 
         // Print the name of the node kind
-        console.log(getSyntaxKindName(node.kind));
+        if (node.kind === ts.SyntaxKind.Identifier) {
+            console.log(getSyntaxKindName(node.kind), '-', node.getText());
+        } else {
+            console.log(getSyntaxKindName(node.kind));
+        }
 
         return false;
     },

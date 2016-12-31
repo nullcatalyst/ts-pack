@@ -7,7 +7,7 @@ const COMPILER_OPTIONS = {
     }
 };
 
-const A_OUTPUT = 'var export_i_a = 0;\nfunction export_fn_a() { return 1; }\n';
+const A_OUTPUT = 'var export_i_a = 0;\nfunction export_fn_a() { return 1; }\nvar _o_a = { a: { b: 0 } };\n_o_a.a.b;\n';
 const B_OUTPUT = 'export_i_a < export_fn_a();\n'
 const C_OUTPUT = 'function export_fn_c() { return export_fn_d(); }\n';
 const D_OUTPUT = 'function export_fn_d() { return 4; }\n';
