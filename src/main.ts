@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as Promise from 'bluebird';
 import * as ts from 'typescript';
 import Getopt = require('node-getopt');
-import * as tsunami from './index';
+import * as tsPack from './index';
 
 const opt = new Getopt([
         ['h', 'help',        'Print this message.'],
@@ -38,7 +38,7 @@ if (opt) {
             compilerOptions = tsconfigJson['compilerOptions'];
         }
 
-        tsunami.compileFile(inFile, compilerOptions)
+        tsPack.compileFile(inFile, compilerOptions)
             .then((output: string) => {
                 let outFile = opt.options['outFile'];
 

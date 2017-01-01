@@ -1,18 +1,18 @@
 {
-  "name": "tsunami",
+  "name": "ts-pack",
   "version": "0.1.0",
   "description": "",
   "main": "lib/index.js",
   "bin": {
-    "tsunami": "bin/tsunami"
+    "tspack": "bin/tspack"
   },
   "scripts": {
-    "start": "bin/tsunami",
+    "start": "bin/tspack",
     "test": "mocha",
     "build": "npm run clean && npm run bootstrap && npm run compress",
     "clean": "rm -rf lib index.js",
-    "bootstrap": "tsc -p . && bin/tsunami src/main.ts -o index.js",
-    "compress": "uglifyjs --compress --mangle --wrap=tsunami -o index.js -- index.js"
+    "bootstrap": "tsc -p . && bin/tspack src/main.ts -o index.js",
+    "compress": "uglifyjs --compress --mangle --wrap=tsPack -o index.js -- index.js"
   },
   "author": "Scott Bennett <scottbennett912@gmail.com>",
   "license": "ISC",
