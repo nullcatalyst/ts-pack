@@ -10,13 +10,13 @@
             "name": "Launch Program",
             "program": "${workspaceRoot}/src/main.ts",
             "cwd": "${workspaceRoot}",
+            "sourceMaps": true,
             "args": [
-                "../demo/one"
+                "test/example/a.ts"
             ],
             "outFiles": [
                 "${workspaceRoot}/lib/**"
-            ],
-            "sourceMaps": true
+            ]
         },
         {
             "type": "node",
