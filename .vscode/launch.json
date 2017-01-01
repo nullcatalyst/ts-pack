@@ -14,8 +14,18 @@
             // "outFiles": [
             //     "${workspaceRoot}/lib/**"
             // ],
+            "env": {
+                "NODE_PATH": "${workspaceRoot}/lib"
+            },
             "args": [
-                "test/example/e.ts"
+                // "-p",
+                // "${workspaceRoot}/test/example/tsconfig.json",
+                // "test/example/e.ts"
+
+                "-p",
+                "${workspaceRoot}/tsconfig.json",
+                "src/main.ts"
+                // "src/tspoon/traverse-ast.ts"
             ]
         },
         {

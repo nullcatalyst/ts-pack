@@ -1,8 +1,8 @@
 import * as ts from 'typescript';
-import { RawSourceMap, SourceMapConsumer, SourceMapGenerator, MappedPosition } from 'source-map';
-import * as traverse from './traverse-ast';
 import * as MagicString from 'magic-string';
-import binarySearch from './binary-search';
+import { RawSourceMap, SourceMapConsumer, SourceMapGenerator, MappedPosition } from 'source-map';
+import * as traverse from 'tspoon/traverse-ast';
+import binarySearch from 'tspoon/binary-search';
 
 export abstract class MappedAction {
     abstract execute(ast: ts.SourceFile, magicString: MagicString): ts.SourceFile;

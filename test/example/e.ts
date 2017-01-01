@@ -1,3 +1,4 @@
-import { basename } from 'path';
+import * as path1 from 'path';
+import f from './f';
 
-basename;
+path1.resolve() == f;

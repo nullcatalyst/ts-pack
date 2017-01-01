@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
-import * as tspoon from '../tspoon';
-import { VisitorContext, Context } from '../context';
+import * as tspoon from 'tspoon';
+import { VisitorContext, Context } from 'context';
 
 const impl: tspoon.Visitor = {
     filter: function filter(node: ts.Node) {
@@ -9,7 +9,7 @@ const impl: tspoon.Visitor = {
     visit: function visit(node: ts.ExportAssignment, context: VisitorContext) {
         if (node.isExportEquals) {
             // export = <expression>
-            throw new Error('unimplemented');
+            // throw new Error('Unimplemented :(');
         } else {
             // export default <expression>
             context.custom.addDefault(node.expression.getText());

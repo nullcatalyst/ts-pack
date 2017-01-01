@@ -2,8 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as Promise from 'bluebird';
 import * as ts from 'typescript';
-import Getopt = require('node-getopt');
-import * as tsPack from './index';
+import * as Getopt from 'node-getopt';
+import * as tsPack from 'index';
 
 const opt = new Getopt([
         ['h', 'help',        'Print this message.'],
@@ -31,11 +31,15 @@ if (opt) {
         if (tsconfig) {
             const stats = fs.lstatSync(tsconfig);
             if (stats.isDirectory()) {
-                tsconfig = path.join(tsconfig, 'tsconfig.json');
+                tsconfig = path.resolve(tsconfig, 'tsconfig.json');
             }
 
             const tsconfigJson = require(tsconfig);
             compilerOptions = tsconfigJson['compilerOptions'];
+
+            // if (tsconfigJson['compilerOptions']['baseUrl']) {
+            //     tsconfigJson['compilerOptions']['baseUrl'] = path.resolve(path.dirname(tsconfig), tsconfigJson['compilerOptions']['baseUrl']);
+            // }
         }
 
         tsPack.compileFile(inFile, compilerOptions)

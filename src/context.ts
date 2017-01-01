@@ -1,10 +1,16 @@
+import * as path from 'path';
+import * as builtinModules from 'builtin-modules';
 import * as ts from 'typescript';
-import * as tspoon from './tspoon';
-import { resolveModule, isNodeModule } from './util/resolve-module';
-import { CompilerOptions, MangleType } from './util/compiler-options';
-import VISITORS from './visitors';
+import * as tspoon from 'tspoon';
+import { CompilerOptions, MangleType } from 'util/compiler-options';
+import VISITORS from 'visitors';
 
 interface MapLike<T> { [id: string]: T }
+
+const MODULE_HOST = {
+    fileExists: ts.sys.fileExists,
+    readFile: ts.sys.readFile,
+};
 
 /** import { string[0] as string[1] } from <module> */
 export type ImportedPropertyName = [string, string];
@@ -77,6 +83,27 @@ export class Context {
         }
     }
 
+    private resolveModule(moduleName: string, parentPath?: string): string | undefined {
+        parentPath = parentPath || '';
+
+        const resolvedModule = ts.resolveModuleName(moduleName, parentPath, this.options || {}, MODULE_HOST);
+        let resolvedModuleName = resolvedModule.resolvedModule && resolvedModule.resolvedModule.resolvedFileName;
+
+        // if (resolvedModuleName && resolvedModuleName[0] !== '/' && this.options['baseUrl']) {
+        //     resolvedModuleName = path.join(this.options['baseUrl'], resolvedModuleName);
+        // }
+
+        return resolvedModuleName;
+    }
+
+    private isNodeModule(modulePath: string): boolean {
+        if (builtinModules.indexOf(modulePath) >= 0) {
+            return true;
+        } else {
+            return modulePath.indexOf('/node_modules/') >= 0 || modulePath.indexOf('node_modules/') === 0;
+        }
+    }
+
     addId(id: string, mangle: MangleType): void {
         const mangledId = this.mangleId(id, mangle);
 
@@ -128,8 +155,8 @@ export class Context {
     }
 
     addImport(moduleName: string, importedAs: string | ImportedPropertyName[], _default: boolean): TranspilerOutput | string | undefined {
-        let resolvedModulePath = resolveModule(moduleName, this.sourceFile.fileName);
-        const nodeModule = isNodeModule(resolvedModulePath || moduleName);
+        let resolvedModulePath = this.resolveModule(moduleName, this.sourceFile.fileName);
+        const nodeModule = this.isNodeModule(resolvedModulePath || moduleName);
         if (!resolvedModulePath && !nodeModule) return;
 
         if (nodeModule) {
@@ -145,8 +172,8 @@ export class Context {
                 }
             };
 
-            if (resolvedModulePath in this.imports) {
-                assignIds(this.imports[resolvedModulePath] as string);
+            if (moduleName in this.imports) {
+                assignIds(this.imports[moduleName] as string);
             } else {
                 let id = this.mangleId('', 'node', resolvedModulePath);
                 this.imports[moduleName] = id;
@@ -173,8 +200,8 @@ export class Context {
     }
 
     addExport(moduleName: string, exportedProps?: ImportedPropertyName[]): TranspilerOutput | string | undefined {
-        let resolvedModulePath = resolveModule(moduleName, this.sourceFile.fileName);
-        const nodeModule = isNodeModule(resolvedModulePath || moduleName);
+        let resolvedModulePath = this.resolveModule(moduleName, this.sourceFile.fileName);
+        const nodeModule = this.isNodeModule(resolvedModulePath || moduleName);
         if (!resolvedModulePath && !nodeModule) return;
 
         if (nodeModule) {

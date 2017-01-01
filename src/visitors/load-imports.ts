@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
-import * as tspoon from '../tspoon';
-import { VisitorContext, TranspilerOutput, Context } from '../context';
+import * as tspoon from 'tspoon';
+import { VisitorContext, TranspilerOutput, Context } from 'context';
 
 const impl: tspoon.Visitor = {
     filter: function filter(node: ts.Node) {
@@ -11,9 +11,9 @@ const impl: tspoon.Visitor = {
         // This is the module to be loaded, after removing the quotes
         let moduleName = node.moduleSpecifier.getText().slice(1, -1);
 
-        function replace(output: TranspilerOutput | string): void {
+        function replace(output: TranspilerOutput | string, _default?: boolean): void {
             if (typeof output === 'string') {
-                context.replace(node.getStart(), node.getEnd(), `import ${output} from ${node.moduleSpecifier.getText()};`);
+                context.replace(node.getStart(), node.getEnd(), `import ${_default ? '' : '* as '}${output} from ${node.moduleSpecifier.getText()};`);
             } else if (typeof output === 'object') {
                 context.replace(node.getStart(), node.getEnd(), output.code);
             }
@@ -26,7 +26,7 @@ const impl: tspoon.Visitor = {
 
                 const output = context.custom.addImport(moduleName, importedAs, true);
                 if (output) {
-                    replace(output);
+                    replace(output, true);
                     return;
                 }
             }
@@ -38,7 +38,7 @@ const impl: tspoon.Visitor = {
 
                     const output = context.custom.addImport(moduleName, importedAs, false);
                     if (output) {
-                        replace('* as ' + output);
+                        replace(output);
                         return;
                     }
                 } else if (node.importClause.namedBindings.kind === ts.SyntaxKind.NamedImports) {
@@ -52,7 +52,7 @@ const impl: tspoon.Visitor = {
 
                     const output = context.custom.addImport(moduleName, importedProperties, false);
                     if (output) {
-                        replace('* as ' + output);
+                        replace(output);
                         return;
                     }
                 }

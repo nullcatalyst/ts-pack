@@ -15,8 +15,8 @@
     "test": "mocha",
     "build": "npm run clean && npm run bootstrap && npm run compress",
     "clean": "rm -rf lib index.js",
-    "bootstrap": "tsc -p . && bin/tspack src/main.ts -o index.js",
-    "compress": "uglifyjs --compress --mangle --wrap=tsPack -o index.js -- index.js"
+    "bootstrap": "tsc -p . && bin/tspack -p . src/main.ts -o index.js",
+    "compress": "#uglifyjs --compress --mangle --wrap=tsPack -o index.js -- index.js"
   },
   "author": "Scott Bennett <scottbennett912@gmail.com>",
   "license": "ISC",
@@ -38,7 +38,6 @@
     "@types/lodash": "^4.14.45",
     "@types/mocha": "^2.2.35",
     "@types/node": "^6.0.54",
-    "@types/node-getopt": "^0.2.29",
     "@types/source-map": "^0.5.0",
     "mocha": "^3.2.0",
     "uglify-js": "^2.7.5"

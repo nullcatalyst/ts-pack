@@ -1,6 +1,13 @@
 import * as ts from 'typescript';
-import * as tspoon from '../tspoon';
-import { getSyntaxKindName } from '../util/syntax-kind';
+import * as tspoon from 'tspoon';
+
+function getSyntaxKindName(syntaxKind: ts.SyntaxKind): string | undefined {
+    for (let property in ts.SyntaxKind) {
+        if (ts.SyntaxKind[property] as any === syntaxKind) {
+            return property;
+        }
+    }
+}
 
 const impl: tspoon.Visitor = {
     filter: function filter(node: ts.Node) {

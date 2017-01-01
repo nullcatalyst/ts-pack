@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { Visitor } from './visitor';
+import { Visitor } from 'tspoon/visitor';
 
 export const defaultCompilerOptions: ts.CompilerOptions = {
     module: ts.ModuleKind.CommonJS,

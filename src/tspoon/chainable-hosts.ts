@@ -1,12 +1,12 @@
 import * as ts from 'typescript';
-import { chainHosts } from './hosts-base';
-import { CodeTransformer, VisitorBasedTransformer } from './transformer';
-import { ChainableHost } from './hosts-base';
-import { MutableSourceCode } from './mutable-source-code';
+import { chainHosts } from 'tspoon/hosts-base';
+import { CodeTransformer, VisitorBasedTransformer } from 'tspoon/transformer';
+import { ChainableHost } from 'tspoon/hosts-base';
+import { MutableSourceCode } from 'tspoon/mutable-source-code';
 import { RawSourceMap } from 'source-map';
-import { defaultCompilerOptions } from './configuration';
-import { MultipleFilesHost } from './hosts';
-import { Visitor } from './visitor';
+import { defaultCompilerOptions } from 'tspoon/configuration';
+import { MultipleFilesHost } from 'tspoon/hosts';
+import { Visitor } from 'tspoon/visitor';
 
 const normalizePath: { (path: string): string } = ts['normalizePath'];
 const getDirectoryPath: { (path: string): string } = ts['getDirectoryPath'];

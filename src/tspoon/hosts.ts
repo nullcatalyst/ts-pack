@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
-import { HostBase } from './hosts-base';
-import { defaultCompilerOptions } from './configuration';
+import { HostBase } from 'tspoon/hosts-base';
+import { defaultCompilerOptions } from 'tspoon/configuration';
 import { RawSourceMap } from 'source-map';
 
 function fileExtensionIs(path: string, extension: string): boolean {

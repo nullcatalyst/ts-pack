@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
-import * as tspoon from '../tspoon';
-import { MangleType } from '../util/compiler-options';
-import { VisitorContext, Context } from '../context';
+import * as tspoon from 'tspoon';
+import { MangleType } from 'util/compiler-options';
+import { VisitorContext, Context } from 'context';
 
 const impl: tspoon.Visitor = {
     filter: function filter(node: ts.Node) {

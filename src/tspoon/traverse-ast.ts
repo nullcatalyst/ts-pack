@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { Visitor, VisitorContext } from './visitor';
+import { Visitor, VisitorContext } from 'tspoon/visitor';
 
 function descend(node: ts.Node, context: VisitorContext) {
     return function visit(...visitors: Visitor[]): void {
