@@ -34,7 +34,11 @@ export function compile(fileName: string, contents: string, options?: CompilerOp
 
     fileName = path.resolve(fileName);
     return new Promise<string>((resolve, reject) => {
-            const output = Context.transpile(options, fileName);
-            return output.code;
+            try {
+                const output = Context.transpile(options, fileName);
+                resolve(output.code);
+            } catch (error) {
+                reject(error);
+            }
         });
 }
