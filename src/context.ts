@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import * as tspoon from './tspoon';
-import { resolveModule } from './util/resolve-module';
-import { CompilerOptions } from './util/compiler-options';
+import { resolveModule, isNodeModule } from './util/resolve-module';
+import { CompilerOptions, MangleType } from './util/compiler-options';
 import VISITORS from './visitors';
 
 interface MapLike<T> { [id: string]: T }
@@ -42,7 +42,7 @@ export class Context {
     /**
      * This maps the full resolved source file name to the map of variables it exports
      */
-    private imports: MapLike<Context>;
+    private imports: MapLike<Context | string>;
 
     constructor(options: CompilerOptions, sourceFile: ts.SourceFile, parent?: Context) {
         this.options    = options;
@@ -55,28 +55,34 @@ export class Context {
         this.imports[sourceFile.fileName] = this;
     }
 
-    /**
-     * Mangles the identifier, creating a globally unique name
-     * This can be overridden or swapped out if desired
-     */
-    mangleId(id: string, _export: boolean): string {
+    /** Mangles the identifier, creating a globally unique name */
+    private mangleId(id: string, mangle: MangleType, fileName?: string): string {
+        fileName = fileName || this.sourceFile.fileName;
+
         if (this.options.mangleId) {
-            return this.options.mangleId(this.sourceFile.fileName, id, _export);
+            return this.options.mangleId(fileName, id, mangle);
         } else {
-            const fileName = this.sourceFile.fileName;
-            const prefix = _export ? '_pbl__' : '_prv__';
-            const postfix = '__' + fileName.substr(0, fileName.lastIndexOf('.')).replace(/[^a-z0-9]/gmi, '_');
+            let prefix: string;
+            switch (mangle) {
+                case 'private': prefix = 'prvt$'; break;
+                case 'default': prefix = 'pblc$'; break;
+                case 'export':  prefix = 'pblc$'; break;
+                case 'node':    prefix = 'node$'; break;
+            }
+
+            const extIndex = fileName.lastIndexOf('.');
+            const postfix = '$' + (extIndex >= 0 ? fileName.substr(0, fileName.lastIndexOf('.')) : fileName).replace(/[^a-z0-9]/gmi, '_');
 
             return prefix + id + postfix;
         }
     }
 
-    addId(id: string, _export: boolean, _default: boolean): void {
-        const mangledId = this.mangleId(id, _export);
+    addId(id: string, mangle: MangleType): void {
+        const mangledId = this.mangleId(id, mangle);
 
         this.ids[id] = mangledId;
-        if (_export) this.exports[id] = mangledId;
-        if (_default) this.exports[''] = mangledId;
+        if (mangle === 'export')  this.exports[id] = mangledId;
+        if (mangle === 'default') this.exports[''] = mangledId;
     }
 
     addDefault(id: string): void {
@@ -121,53 +127,76 @@ export class Context {
         }
     }
 
-    addImport(moduleName: string, importedAs: string | ImportedPropertyName[], _default: boolean): TranspilerOutput | null | undefined {
-        const resolvedModulePath = resolveModule(moduleName, this.sourceFile.fileName);
+    addImport(moduleName: string, importedAs: string | ImportedPropertyName[], _default: boolean): TranspilerOutput | string | undefined {
+        let resolvedModulePath = resolveModule(moduleName, this.sourceFile.fileName);
+        const nodeModule = isNodeModule(resolvedModulePath || moduleName);
+        if (!resolvedModulePath && !nodeModule) return;
 
-        if (resolvedModulePath) {
+        if (nodeModule) {
+            resolvedModulePath = resolvedModulePath || moduleName;
+
+            const assignIds = (id: string) => {
+                if (typeof importedAs === 'string') {
+                    this.ids[importedAs] = id;
+                } else if (typeof importedAs === 'object') {
+                    importedAs.forEach(importedProperty => {
+                        this.ids[importedProperty[1]] = id + '.' + importedProperty[0];
+                    });
+                }
+            };
+
+            if (resolvedModulePath in this.imports) {
+                assignIds(this.imports[resolvedModulePath] as string);
+            } else {
+                let id = this.mangleId('', 'node', resolvedModulePath);
+                this.imports[moduleName] = id;
+                assignIds(id);
+                return id;
+            }
+        } else {
             const output = this.importModule(resolvedModulePath);
 
             if (typeof importedAs === 'string') {
                 if (_default) {
-                    this.ids[importedAs] = this.imports[resolvedModulePath].exports[''];
+                    this.ids[importedAs] = (this.imports[resolvedModulePath] as Context).exports[''];
                 } else {
-                    this.ids[importedAs] = this.imports[resolvedModulePath].exports;
+                    this.ids[importedAs] = (this.imports[resolvedModulePath] as Context).exports;
                 }
             } else if (typeof importedAs === 'object') {
                 importedAs.forEach(importedProperty => {
-                    this.ids[importedProperty[1]] = this.imports[resolvedModulePath].exports[importedProperty[0]];
+                    this.ids[importedProperty[1]] = (this.imports[resolvedModulePath] as Context).exports[importedProperty[0]];
                 });
             }
 
             return output;
-        } else if (!(moduleName in this.imports)) {
-            this.imports[moduleName] = null;
-            return null;
         }
     }
 
-    addExport(moduleName: string, exportedProps?: ImportedPropertyName[]): TranspilerOutput | null | undefined {
-        const resolvedModulePath = resolveModule(moduleName, this.sourceFile.fileName);
+    addExport(moduleName: string, exportedProps?: ImportedPropertyName[]): TranspilerOutput | string | undefined {
+        let resolvedModulePath = resolveModule(moduleName, this.sourceFile.fileName);
+        const nodeModule = isNodeModule(resolvedModulePath || moduleName);
+        if (!resolvedModulePath && !nodeModule) return;
 
-        if (resolvedModulePath) {
+        if (nodeModule) {
+            resolvedModulePath = resolvedModulePath || moduleName;
+            if (!(resolvedModulePath in this.imports)) {
+                let id = this.mangleId('', 'node', resolvedModulePath);
+                this.imports[moduleName] = id;
+                return id;
+            }
+        } else {
             const output = this.importModule(resolvedModulePath);
 
             if (!exportedProps) {
-                // Object.assign(this.exports, this.imports[resolvedModulePath].exports);
-
-                for (let property in this.imports[resolvedModulePath].exports) {
-                    this.exports[property] = this.imports[resolvedModulePath].exports[property];
-                }
+                // Copy all of the exports over
+                Object.assign(this.exports, (this.imports[resolvedModulePath] as Context).exports);
             } else {
                 exportedProps.forEach(([ exportedProp, exportedPropAs ]) => {
-                    this.exports[exportedPropAs] = this.imports[resolvedModulePath].exports[exportedProp];
+                    this.exports[exportedPropAs] = (this.imports[resolvedModulePath] as Context).exports[exportedProp];
                 });
             }
 
             return output;
-        } else if (!(moduleName in this.imports)) {
-            this.imports[moduleName] = null;
-            return null;
         }
     }
 }

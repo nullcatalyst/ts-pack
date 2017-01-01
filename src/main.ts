@@ -43,11 +43,14 @@ if (opt) {
                 let outFile = opt.options['outFile'];
 
                 if (!outFile) {
-                    if (inFile.endsWith('.ts')) {
-                        outFile = inFile.slice(0, -3) + '.js';
-                    } else {
-                        outFile = inFile + '.js';
-                    }
+                    // if (inFile.endsWith('.ts')) {
+                    //     outFile = inFile.slice(0, -3) + '.js';
+                    // } else {
+                    //     outFile = inFile + '.js';
+                    // }
+
+                    output.split('\n').forEach(line => console.log(line));
+                    return;
                 }
 
                 fs.writeFileSync(outFile, output, { 'encoding': 'utf8' });

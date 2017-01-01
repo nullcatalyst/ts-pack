@@ -2,8 +2,8 @@ const assert = require('assert');
 const tsPack = require('../lib/index');
 
 const COMPILER_OPTIONS = {
-    mangleId: function (fileName, id, _export) {
-        return (_export ? 'export_' : '_') + id + ('_' + fileName.slice(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.')));
+    mangleId: function (fileName, id, mangle) {
+        return (mangle === 'export' ? 'export_' : '_') + id + ('_' + fileName.slice(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.')));
     }
 };
 
@@ -38,6 +38,14 @@ describe('tsPack', function () {
         return tsPack.compileFile('test/example/d.ts', COMPILER_OPTIONS)
             .then(output => {
                 assert.equal(output, C_OUTPUT + D_OUTPUT);
+            });
+    });
+
+    it('should handle node modules', function () {
+        return tsPack.compileFile('test/example/e.ts', COMPILER_OPTIONS)
+            .then(output => {
+                console.log(output);
+                // assert.equal(output, C_OUTPUT + D_OUTPUT);
             });
     });
 });

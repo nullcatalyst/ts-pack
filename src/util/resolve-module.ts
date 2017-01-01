@@ -1,4 +1,5 @@
 import * as ts from 'typescript';
+import * as builtinModules from 'builtin-modules';
 
 const COMPILER_OPTIONS = {
     module: ts.ModuleKind.CommonJS,
@@ -11,10 +12,16 @@ const MODULE_HOST = {
 };
 
 export function resolveModule(moduleName: string, parentPath?: string): string | undefined {
-    if (moduleName[0] !== '.' && moduleName[0] !== '/') return;
-
     parentPath = parentPath || '';
 
     const resolvedModule = ts.resolveModuleName(moduleName, parentPath, COMPILER_OPTIONS, MODULE_HOST);
     return resolvedModule.resolvedModule && resolvedModule.resolvedModule.resolvedFileName;
+}
+
+export function isNodeModule(modulePath: string): boolean {
+    if (builtinModules.indexOf(modulePath) >= 0) {
+        return true;
+    } else {
+        return modulePath.indexOf('/node_modules/') >= 0;
+    }
 }

@@ -8,6 +8,7 @@ const impl: tspoon.Visitor = {
             && node.parent.kind !== ts.SyntaxKind.ExportAssignment    // export default X; -OR- export = X;
             && node.parent.kind !== ts.SyntaxKind.ImportClause        // import X from <module>;
             && node.parent.kind !== ts.SyntaxKind.ImportSpecifier     // import { X as Y } from <module>;
+            && node.parent.kind !== ts.SyntaxKind.NamespaceImport     // import * as X from <module>;
             && node.parent.kind !== ts.SyntaxKind.MethodDeclaration   // class Y { X() { ... } };
             && node.parent.kind !== ts.SyntaxKind.PropertyDeclaration // class Y { X: string };
             && ( // Y.X;

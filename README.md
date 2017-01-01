@@ -4,7 +4,7 @@
 
 Inspired by [webpack](https://github.com/webpack/webpack), this is an attempt at duplicating the basic functionality of merging source files into one output file.
 The goal is to merge all source files without the overhead of the the module functions and the array containing the exports.
-Initial start-up time, especially projects using many small modules, should benefit the most from using a packer like this.
+File size and initial start-up time, especially for projects using many small modules, should benefit the most from using a packer like this.
 
 This project uses [typescript](https://github.com/microsoft/typescript) to parse files into an abstract syntax tree, which is then modified using [tspoon](https://github.com/wix/tspoon) to produce a single output with the variables from each module (exported and internal) renamed to coexist in a single scope.
 The output should then be run through a javascript minifier like [uglify](https://github.com/mishoo/UglifyJS2) to produce the final result.
