@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import * as tspoon from 'tspoon';
+import * as tspoon from '../tspoon';
 
 function getSyntaxKindName(syntaxKind: ts.SyntaxKind): string | undefined {
     for (let property in ts.SyntaxKind) {

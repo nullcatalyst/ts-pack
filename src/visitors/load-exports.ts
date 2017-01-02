@@ -1,6 +1,6 @@
 import * as typescript from 'typescript';
-import * as tspoon from 'tspoon';
-import { VisitorContext, Context } from 'context';
+import * as tspoon from '../tspoon';
+import { VisitorContext, Context } from '../context';
 
 const impl: tspoon.Visitor = {
     filter: function filter(node: typescript.Node) {

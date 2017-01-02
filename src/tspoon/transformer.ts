@@ -1,8 +1,8 @@
 import * as ts from 'typescript';
-import { Visitor } from 'tspoon/visitor';
-import { TranspilerContext } from 'tspoon/transpiler-context';
-import { traverseAst } from 'tspoon/traverse-ast';
-import { MutableSourceCode } from 'tspoon/mutable-source-code';
+import { Visitor } from '../tspoon/visitor';
+import { TranspilerContext } from '../tspoon/transpiler-context';
+import { traverseAst } from '../tspoon/traverse-ast';
+import { MutableSourceCode } from '../tspoon/mutable-source-code';
 
 export interface CodeTransformer {
     transform(ast: ts.SourceFile): MutableSourceCode;

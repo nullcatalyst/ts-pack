@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as Promise from 'bluebird';
 import * as ts from 'typescript';
 import * as Getopt from 'node-getopt';
-import * as tsPack from 'index';
+import * as tsPack from './index';
 
 const opt = new Getopt([
         ['h', 'help',        'Print this message.'],

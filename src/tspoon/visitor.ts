@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { Action } from 'tspoon/mutable-source-code';
+import { Action } from '../tspoon/mutable-source-code';
 
 /**
  * a transpilation actions API supplied to Visitor at visit time

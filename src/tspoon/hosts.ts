@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
-import { HostBase } from 'tspoon/hosts-base';
-import { defaultCompilerOptions } from 'tspoon/configuration';
 import { RawSourceMap } from 'source-map';
+import { HostBase } from '../tspoon/hosts-base';
+import { defaultCompilerOptions } from '../tspoon/configuration';
 
 function fileExtensionIs(path: string, extension: string): boolean {
     let pathLen = path.length;

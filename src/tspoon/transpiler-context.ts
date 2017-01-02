@@ -1,9 +1,9 @@
 import * as ts from 'typescript';
-import { MutableSourceCode, Action, ReplaceAction } from 'tspoon/mutable-source-code';
-import { Visitor, VisitorContext } from 'tspoon/visitor';
-import { FastAppendAction } from 'tspoon/mutable-source-code';
-import { FastRewriteAction } from 'tspoon/mutable-source-code';
-import { InsertAction } from 'tspoon/mutable-source-code';
+import { MutableSourceCode, Action, ReplaceAction } from '../tspoon/mutable-source-code';
+import { Visitor, VisitorContext } from '../tspoon/visitor';
+import { FastAppendAction } from '../tspoon/mutable-source-code';
+import { FastRewriteAction } from '../tspoon/mutable-source-code';
+import { InsertAction } from '../tspoon/mutable-source-code';
 
 export class TranspilerContext implements VisitorContext {
 

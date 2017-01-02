@@ -1,9 +1,9 @@
 import * as path from 'path';
 import * as builtinModules from 'builtin-modules';
 import * as ts from 'typescript';
-import * as tspoon from 'tspoon';
-import { CompilerOptions, MangleType } from 'util/compiler-options';
-import VISITORS from 'visitors';
+import * as tspoon from './tspoon';
+import { CompilerOptions, MangleType } from './util/compiler-options';
+import VISITORS from './visitors';
 
 interface MapLike<T> { [id: string]: T }
 

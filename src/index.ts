@@ -2,11 +2,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as Promise from 'bluebird';
 import * as ts from 'typescript';
-import * as tspoon from 'tspoon';
-import { CompilerOptions } from 'util/compiler-options';
-import { Context } from 'context';
+import * as tspoon from './tspoon';
+import { CompilerOptions } from './util/compiler-options';
+import { Context } from './context';
 
-export { CompilerOptions } from 'util/compiler-options';
+export { CompilerOptions } from './util/compiler-options';
 
 const lstat = Promise.promisify<fs.Stats, string>(fs.lstat);
 const readFile = Promise.promisify<string, string, string>(fs.readFile);

@@ -1,15 +1,15 @@
 import * as ts from 'typescript';
 import { RawSourceMap } from 'source-map';
-import { SingleFileHost, MultipleFilesHost } from 'tspoon/hosts';
-import { traverseAst } from 'tspoon/traverse-ast';
-import { MutableSourceCode } from 'tspoon/mutable-source-code';
-import { Visitor } from 'tspoon/visitor';
-import { TranspilerContext } from 'tspoon/transpiler-context';
-import { defaultCompilerOptions } from 'tspoon/configuration';
-import { SemanticHost } from 'tspoon/chainable-hosts';
-import { TransformationHost } from 'tspoon/chainable-hosts';
-import { chainHosts } from 'tspoon/hosts-base';
-import { AstCacheHost } from 'tspoon/chainable-hosts';
+import { SingleFileHost, MultipleFilesHost } from '../tspoon/hosts';
+import { traverseAst } from '../tspoon/traverse-ast';
+import { MutableSourceCode } from '../tspoon/mutable-source-code';
+import { Visitor } from '../tspoon/visitor';
+import { TranspilerContext } from '../tspoon/transpiler-context';
+import { defaultCompilerOptions } from '../tspoon/configuration';
+import { SemanticHost } from '../tspoon/chainable-hosts';
+import { TransformationHost } from '../tspoon/chainable-hosts';
+import { chainHosts } from '../tspoon/hosts-base';
+import { AstCacheHost } from '../tspoon/chainable-hosts';
 
 /**
  * result of transpilation action

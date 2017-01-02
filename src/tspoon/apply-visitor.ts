@@ -1,11 +1,11 @@
 import * as ts from 'typescript';
-import { defaultCompilerOptions } from 'tspoon/configuration';
-import { traverseAst } from 'tspoon/traverse-ast';
-import { Visitor } from 'tspoon/visitor';
-import { Action, MutableSourceCode } from 'tspoon/mutable-source-code';
-import { TranspilerContext } from 'tspoon/transpiler-context';
-import { SemanticHost } from 'tspoon/chainable-hosts';
-import { VisitorBasedTransformer, CodeTransformer } from 'tspoon/transformer';
+import { defaultCompilerOptions } from '../tspoon/configuration';
+import { traverseAst } from '../tspoon/traverse-ast';
+import { Visitor } from '../tspoon/visitor';
+import { Action, MutableSourceCode } from '../tspoon/mutable-source-code';
+import { TranspilerContext } from '../tspoon/transpiler-context';
+import { SemanticHost } from '../tspoon/chainable-hosts';
+import { VisitorBasedTransformer, CodeTransformer } from '../tspoon/transformer';
 
 export interface ApplyVisitorResult {
     file: ts.SourceFile,
