@@ -51,7 +51,7 @@ export function compileFile(fileName: string, options?: CompilerOptions): Promis
         })
         .then(() => {
             // if (emitHelpers) {
-                return readFile('src/helpers.js', 'utf8');
+                return readFile(path.resolve(__dirname, 'helpers.js'), 'utf8');
             // } else {
             //     return '';
             // }
