@@ -13,7 +13,9 @@ const impl: tspoon.Visitor = {
         if (node.modifiers && node.modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword)) mangle = 'export';
         if (node.modifiers && node.modifiers.some(m => m.kind === ts.SyntaxKind.DefaultKeyword)) mangle = 'default';
 
-        context.custom.addId(node.name.getText(), mangle);
+        let mangledId = context.custom.addId(node.name ? node.name.getText() : '', mangle);
+
+        if (!node.name) context.insert(node.getStart() + node.getText().indexOf('function') + 'function'.length, ' ' + mangledId);
     }
 };
 

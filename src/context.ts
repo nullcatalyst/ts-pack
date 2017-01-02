@@ -104,12 +104,14 @@ export class Context {
         }
     }
 
-    addId(id: string, mangle: MangleType): void {
+    addId(id: string, mangle: MangleType): string {
         const mangledId = this.mangleId(id, mangle);
 
         this.ids[id] = mangledId;
         if (mangle === 'export')  this.exports[id] = mangledId;
         if (mangle === 'default') this.exports[''] = mangledId;
+
+        return mangledId;
     }
 
     addDefault(id: string): void {

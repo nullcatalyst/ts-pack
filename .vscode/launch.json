@@ -18,14 +18,13 @@
                 "NODE_PATH": "${workspaceRoot}/lib"
             },
             "args": [
-                // "-p",
-                // "${workspaceRoot}/test/example/tsconfig.json",
-                // "test/example/e.ts"
-
                 "-p",
-                "${workspaceRoot}/tsconfig.json",
-                "src/main.ts"
-                // "src/tspoon/traverse-ast.ts"
+                "${workspaceRoot}/test/example/tsconfig.json",
+                "test/example/b.ts"
+
+                // "-p",
+                // "${workspaceRoot}/tsconfig.json",
+                // "src/main.ts"
             ]
         },
         {
