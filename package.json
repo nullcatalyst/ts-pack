@@ -1,6 +1,6 @@
 {
   "name": "ts-pack",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A simple typescript packer that merges imports into a single file. Without all of the complexity",
   "main": "lib/index.js",
   "bin": {
