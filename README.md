@@ -47,7 +47,7 @@ tspack --version # Output the current version, including the version of the incl
 ## Some notable caveats
 
 1. It does not support importing via the `require()` function. Any call to `require()` will stay as such, and will not get merged. *This may be changed at a later date.*
-2. Currently, it only supports merging files that are imported using relative paths. In other words, imports starting with `./` or `../`. This should not be an issue for the most part, but does mean that it is not possible to include node_modules libraries inline. I am working on a way to configure which libraries should be included or excluded, in much the same way as webpack.
+2. Currently, it only supports merging files that are **not** found in the `node_modules` folder. This is to avoid trying to merge native/C++ modules. This should not be an issue for the most part, but does mean that it is not possible to include node_modules libraries inline. I am working on a way to configure which libraries should be included or excluded, in much the same way as webpack. This will most likely involve adding additional fields to the tsconfig file.
 3. *Caveat emptor.* This is probably not production ready. Use at your own risk. I suggest thoroughly testing the output if you plan on using this in your own projects.
 
 [npm]: https://img.shields.io/npm/v/ts-pack.svg
