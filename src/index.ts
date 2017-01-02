@@ -8,22 +8,57 @@ import { Context } from 'context';
 
 export { CompilerOptions } from 'util/compiler-options';
 
-const fileStats = Promise.promisify<fs.Stats, string>(fs.lstat);
+const lstat = Promise.promisify<fs.Stats, string>(fs.lstat);
+const readFile = Promise.promisify<string, string, string>(fs.readFile);
+
+const PARSE_CONFIG: ts.ParseConfigHost = {
+    useCaseSensitiveFileNames: false,
+    fileExists: ts.sys.fileExists,
+    readFile: ts.sys.readFile,
+    readDirectory: ts.sys.readDirectory,
+};
+
+export function parseConfig(fileName: string): Promise<CompilerOptions> {
+    return readFile(fileName, 'utf8')
+        .then((jsonText) => {
+            const result = ts.parseConfigFileTextToJson(fileName, jsonText);
+
+            if (result.error) {
+                throw result.error;
+            } else {
+                const tsconfig = ts.parseJsonConfigFileContent(result.config, PARSE_CONFIG, path.dirname(fileName));
+                const options: CompilerOptions = tsconfig.options;
+
+                // In order to prevent the typescript compiler outputting the helper functions multiple times,
+                // we tell the compiler not to emit the helpers, and we will include them ourselves.
+                options.noEmitHelpers = true;
+
+                return options;
+            }
+        });
+}
 
 export function compileFile(fileName: string, options?: CompilerOptions): Promise<string> {
     // Use the default options if none were supplied
     options = options || {};
 
     const filePath = path.resolve(fileName);
-
-    return fileStats(filePath)
+    return lstat(filePath)
         .then((stats: fs.Stats) => {
-            if (stats.isFile()) {
-                const output = Context.transpile(options, filePath);
-                return output.code;
-            } else {
-                throw new Error(`File "${filePath}" not found`);
+            if (!stats.isFile()) {
+                throw new Error(`Could not read from file "${filePath}"`);
             }
+        })
+        .then(() => {
+            // if (emitHelpers) {
+                return readFile('src/helpers.js', 'utf8');
+            // } else {
+            //     return '';
+            // }
+        })
+        .then((helpers) => {
+            const output = Context.transpile(options, filePath);
+            return helpers + output.code;
         });
 }
 

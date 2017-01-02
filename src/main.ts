@@ -7,7 +7,7 @@ import * as tsPack from 'index';
 
 const opt = new Getopt([
         ['h', 'help',        'Print this message.'],
-        ['o', 'outFile=ARG', 'The output file.'],
+        ['o', 'outFile=ARG', 'The output file. Otherwise logs to the console.'],
         ['p', 'project=ARG', 'Compile the project in the given directory.'],
         ['v', 'version',     'Print the compiler\'s version.'],
     ])
@@ -25,24 +25,25 @@ if (opt) {
 
     if (opt.argv.length > 0) {
         let inFile = opt.argv[0];
+        let promise: Promise<tsPack.CompilerOptions>;
 
-        let compilerOptions: any;
-        let tsconfig = opt.options['project'];
-        if (tsconfig) {
-            const stats = fs.lstatSync(tsconfig);
+        // Read the passed in project settings
+        let tsconfigPath = opt.options['project'];
+        if (tsconfigPath) {
+            const stats = fs.lstatSync(tsconfigPath);
             if (stats.isDirectory()) {
-                tsconfig = path.resolve(tsconfig, 'tsconfig.json');
+                tsconfigPath = path.resolve(tsconfigPath, 'tsconfig.json');
             }
 
-            const tsconfigJson = require(tsconfig);
-            compilerOptions = tsconfigJson['compilerOptions'];
-
-            // if (tsconfigJson['compilerOptions']['baseUrl']) {
-            //     tsconfigJson['compilerOptions']['baseUrl'] = path.resolve(path.dirname(tsconfig), tsconfigJson['compilerOptions']['baseUrl']);
-            // }
+            promise = tsPack.parseConfig(tsconfigPath);
+        } else {
+            promise = Promise.resolve(undefined);
         }
 
-        tsPack.compileFile(inFile, compilerOptions)
+        promise
+            .then((compilerOptions) => {
+                return tsPack.compileFile(inFile, compilerOptions)
+            })
             .then((output: string) => {
                 let outFile = opt.options['outFile'];
 

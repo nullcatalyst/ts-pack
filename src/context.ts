@@ -7,7 +7,7 @@ import VISITORS from 'visitors';
 
 interface MapLike<T> { [id: string]: T }
 
-const MODULE_HOST = {
+const MODULE_HOST: ts.ModuleResolutionHost = {
     fileExists: ts.sys.fileExists,
     readFile: ts.sys.readFile,
 };
