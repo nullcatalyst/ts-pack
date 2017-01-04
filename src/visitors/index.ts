@@ -4,10 +4,10 @@ import debug             from '../visitors/debug';
 import cacheVars         from '../visitors/cache-vars';
 import cacheFuncs        from '../visitors/cache-funcs';
 import cacheClasses      from '../visitors/cache-classes';
-import defaultExports    from '../visitors/default-exports';
+import exportDefault     from '../visitors/export-default';
 import exportExpression  from '../visitors/export-expression';
-import loadExports       from '../visitors/load-exports';
-import loadImports       from '../visitors/load-imports';
+import exportFromModule  from '../visitors/export-from-module';
+import importFromModule  from '../visitors/import-from-module';
 import changeImportProps from '../visitors/change-import-props';
 import changeIds         from '../visitors/change-ids';
 import removeExport      from '../visitors/remove-export';
@@ -17,10 +17,10 @@ const visitors: tspoon.Visitor[] = [
     cacheVars,
     cacheFuncs,
     cacheClasses,
-    defaultExports,
+    exportDefault,
     exportExpression,
-    loadExports,
-    loadImports,
+    exportFromModule,
+    importFromModule,
     changeImportProps,
     changeIds,
     removeExport,
