@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as builtinModules from 'builtin-modules';
 import * as ts from 'typescript';
 import * as tspoon from './tspoon';
-import { CompilerOptions, MangleType, cloneTypescriptOptions } from './util/compiler-options';
+import { CompilerOptions, Mangle, cloneTypescriptOptions } from './util/compiler-options';
 import VISITORS from './visitors';
 
 interface MapLike<T> { [id: string]: T }
@@ -62,7 +62,7 @@ export class Context {
     }
 
     /** Mangles the identifier, creating a globally unique name */
-    private mangleId(id: string, mangle: MangleType, fileName?: string): string {
+    private mangleId(id: string, mangle: Mangle, fileName?: string): string {
         return this.options.packOptions.mangleId(fileName || this.sourceFile.fileName, id, mangle);
     }
 
@@ -83,12 +83,12 @@ export class Context {
         }
     }
 
-    addId(id: string, mangle: MangleType): string {
+    addId(id: string, mangle: Mangle): string {
         const mangledId = this.mangleId(id, mangle);
 
         this.ids[id] = mangledId;
-        if (mangle === 'export')  this.exports[id] = mangledId;
-        if (mangle === 'default') this.exports[''] = mangledId;
+        if (mangle === Mangle.Export)        this.exports[id] = mangledId;
+        if (mangle === Mangle.DefaultExport) this.exports[''] = mangledId;
 
         return mangledId;
     }
@@ -99,7 +99,7 @@ export class Context {
         if (id) {
             mangledId = this.ids[id] as string;
         } else {
-            mangledId = this.mangleId('', 'default');
+            mangledId = this.mangleId('', Mangle.DefaultExport);
         }
 
         this.exports[''] = mangledId;
@@ -175,7 +175,7 @@ export class Context {
             if (moduleName in this.imports) {
                 assignIds(this.imports[moduleName] as string);
             } else {
-                let id = this.mangleId('', 'node', resolvedModulePath);
+                let id = this.mangleId('', Mangle.NodeModuleImport, resolvedModulePath);
                 this.imports[moduleName] = id;
                 assignIds(id);
                 return id;
@@ -209,7 +209,7 @@ export class Context {
         if (nodeModule) {
             resolvedModulePath = resolvedModulePath || moduleName;
             if (!(resolvedModulePath in this.imports)) {
-                let id = this.mangleId('', 'node', resolvedModulePath);
+                let id = this.mangleId('', Mangle.NodeModuleImport, resolvedModulePath);
                 this.imports[moduleName] = id;
                 return id;
             }

@@ -2,20 +2,18 @@ import * as ts from 'typescript';
 
 export type CompilerOptions = ts.CompilerOptions & { packOptions?: PackOptions };
 
-export type MangleType = 'private' | 'export' | 'node' | 'default';
-
-export enum Mangle {
-    Private,
-    Public,
-    Default,
-    Node,
+export const enum Mangle {
+    Internal,
+    Export,
+    DefaultExport,
+    NodeModuleImport,
 };
 
 export interface PackOptions {
     emitCustomHelpers?: boolean;
     wrapOutput?: string;
 
-    mangleId?(fileName: string, id: string, mangle: MangleType): string;
+    mangleId?(fileName: string, id: string, mangle: Mangle): string;
 }
 
 /**
@@ -57,13 +55,13 @@ export function cloneTypescriptOptions(options: CompilerOptions): ts.CompilerOpt
     return tsOptions;
 }
 
-function defaultMangleId(fileName: string, id: string, mangle: MangleType): string {
+function defaultMangleId(fileName: string, id: string, mangle: Mangle): string {
     let prefix: string;
     switch (mangle) {
-        case 'private': prefix = 'prvt$'; break;
-        case 'default': prefix = 'pblc$'; break;
-        case 'export':  prefix = 'pblc$'; break;
-        case 'node':    prefix = 'node$'; break;
+        case Mangle.Internal:         prefix = 'prvt$'; break;
+        case Mangle.Export:           // fallthrough;
+        case Mangle.DefaultExport:    prefix = 'pblc$'; break;
+        case Mangle.NodeModuleImport: prefix = 'node$'; break;
     }
 
     const extIndex = fileName.lastIndexOf('.');

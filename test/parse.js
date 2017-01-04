@@ -6,11 +6,11 @@ const COMPILER_OPTIONS = {
     packOptions: {
         mangleId: function (fileName, id, mangle) {
             let prefix = '_';
-            if (mangle === 'export' || mangle === 'default') prefix = 'export_';
-            if (mangle === 'node') prefix = 'node_';
+            if (mangle === 1 || mangle === 2) prefix = 'export_';
+            if (mangle === 3) prefix = 'node_';
 
             let postfix = '_' + fileName;
-            if (mangle !== 'node') postfix = '_' + fileName.slice(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.'));
+            if (mangle !== 3) postfix = '_' + fileName.slice(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.'));
 
             return prefix + id + postfix;
         }
