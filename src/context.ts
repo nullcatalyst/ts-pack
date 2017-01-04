@@ -43,7 +43,7 @@ export class Context {
      * These are references to the top level functions, variables and classes that had to be renamed to coexist in the global scope.
      * This maps the original source code name to the new mangled name
      */
-    private exports: MapLike<string>;
+    private exports: MapLike<string | MapLike<string>>;
 
     /**
      * This maps the full resolved source file name to the map of variables it exports
@@ -113,6 +113,20 @@ export class Context {
             } else {
                 if (typeof this.ids[id] === 'string') return this.ids[id] as string;
             }
+        }
+    }
+
+    addEnum(name: string, enumValues: { [id: string]: string }, mangle: Mangle): void {
+        this.ids[name] = enumValues;
+
+        switch (mangle) {
+            case Mangle.DefaultExport:
+                this.exports[''] = enumValues;
+                // fallthrough;
+
+            case Mangle.Export:
+                this.exports[name] = enumValues;
+                break;
         }
     }
 
@@ -187,7 +201,7 @@ export class Context {
                 if (_default) {
                     this.ids[importedAs] = (this.imports[resolvedModulePath] as Context).exports[''];
                 } else {
-                    this.ids[importedAs] = (this.imports[resolvedModulePath] as Context).exports;
+                    this.ids[importedAs] = (this.imports[resolvedModulePath] as Context).exports as MapLike<string>;
                 }
             } else if (typeof importedAs === 'object') {
                 importedAs.forEach(importedProperty => {

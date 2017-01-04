@@ -4,6 +4,7 @@ import debug             from '../visitors/debug';
 import cacheVars         from '../visitors/cache-vars';
 import cacheFuncs        from '../visitors/cache-funcs';
 import cacheClasses      from '../visitors/cache-classes';
+import cacheConstEnums   from '../visitors/cache-const-enums';
 import exportDefault     from '../visitors/export-default';
 import exportExpression  from '../visitors/export-expression';
 import exportFromModule  from '../visitors/export-from-module';
@@ -17,6 +18,7 @@ const visitors: tspoon.Visitor[] = [
     cacheVars,
     cacheFuncs,
     cacheClasses,
+    cacheConstEnums,
     exportDefault,
     exportExpression,
     exportFromModule,
