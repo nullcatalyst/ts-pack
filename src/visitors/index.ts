@@ -13,7 +13,7 @@ import changeIds         from '../visitors/change-ids';
 import removeExport      from '../visitors/remove-export';
 
 const visitors: tspoon.Visitor[] = [
-    debug,
+    // debug,
     cacheVars,
     cacheFuncs,
     cacheClasses,

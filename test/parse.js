@@ -15,39 +15,38 @@ const COMPILER_OPTIONS = {
     }
 };
 
-const HELPERS_OUTPUT = fs.readFileSync('src/helpers.js', 'utf8');
-
 const A_OUTPUT = 'var export_i_a = 0;\nfunction export__a() { return 1; }\nvar _o_a = { a: { b: 0 } };\n_o_a.a.b;\n';
 const B_OUTPUT = 'export_i_a < export__a();\n'
 const C_OUTPUT = 'function export_fn_c() { return export_fn_d(); }\n';
 const D_OUTPUT = 'function export_fn_d() { return 4; }\n';
+const G_OUTPUT = 'var _b_g = 2;\nvar export__g = \'test\';\n';
 
 describe('tsPack', function () {
     it('should handle single files', function () {
         return tsPack.compileFile('test/example/a.ts', COMPILER_OPTIONS)
             .then(output => {
-                assert.equal(output, HELPERS_OUTPUT + A_OUTPUT);
+                assert.equal(output, A_OUTPUT);
             });
     });
 
     it('should handle including files', function () {
         return tsPack.compileFile('test/example/b.ts', COMPILER_OPTIONS)
             .then(output => {
-                assert.equal(output, HELPERS_OUTPUT + A_OUTPUT + B_OUTPUT);
+                assert.equal(output, A_OUTPUT + B_OUTPUT);
             });
     });
 
     it('should handle circular references (1)', function () {
         return tsPack.compileFile('test/example/c.ts', COMPILER_OPTIONS)
             .then(output => {
-                assert.equal(output, HELPERS_OUTPUT + D_OUTPUT + C_OUTPUT);
+                assert.equal(output, D_OUTPUT + C_OUTPUT);
             });
     });
 
     it('should handle circular references (2)', function () {
         return tsPack.compileFile('test/example/d.ts', COMPILER_OPTIONS)
             .then(output => {
-                assert.equal(output, HELPERS_OUTPUT + C_OUTPUT + D_OUTPUT);
+                assert.equal(output, C_OUTPUT + D_OUTPUT);
             });
     });
 
@@ -56,6 +55,14 @@ describe('tsPack', function () {
             .then(output => {
                 // console.log(output);
                 // assert.equal(output, C_OUTPUT + D_OUTPUT);
+            });
+    });
+
+    it('should handle exporting blocks and default values', function () {
+        return tsPack.compileFile('test/example/g.ts', COMPILER_OPTIONS)
+            .then(output => {
+                // console.log(output);
+                assert.equal(output, G_OUTPUT);
             });
     });
 });
