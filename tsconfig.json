@@ -12,5 +12,9 @@
         "node_modules",
         "test",
         "lib"
-    ]
+    ],
+    "packOptions": {
+        "emitCustomHandlers": true,
+        "wrapOutput": "(function(){%output%})();"
+    }
 }

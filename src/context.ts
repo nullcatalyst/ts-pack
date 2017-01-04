@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as builtinModules from 'builtin-modules';
 import * as ts from 'typescript';
 import * as tspoon from './tspoon';
-import { CompilerOptions, MangleType } from './util/compiler-options';
+import { CompilerOptions, MangleType, cloneTypescriptOptions } from './util/compiler-options';
 import VISITORS from './visitors';
 
 interface MapLike<T> { [id: string]: T }
@@ -63,24 +63,7 @@ export class Context {
 
     /** Mangles the identifier, creating a globally unique name */
     private mangleId(id: string, mangle: MangleType, fileName?: string): string {
-        fileName = fileName || this.sourceFile.fileName;
-
-        if (this.options.mangleId) {
-            return this.options.mangleId(fileName, id, mangle);
-        } else {
-            let prefix: string;
-            switch (mangle) {
-                case 'private': prefix = 'prvt$'; break;
-                case 'default': prefix = 'pblc$'; break;
-                case 'export':  prefix = 'pblc$'; break;
-                case 'node':    prefix = 'node$'; break;
-            }
-
-            const extIndex = fileName.lastIndexOf('.');
-            const postfix = '$' + (extIndex >= 0 ? fileName.substr(0, fileName.lastIndexOf('.')) : fileName).replace(/[^a-z0-9]/gmi, '_');
-
-            return prefix + id + postfix;
-        }
+        return this.options.packOptions.mangleId(fileName || this.sourceFile.fileName, id, mangle);
     }
 
     private resolveModule(moduleName: string, parentPath?: string): string | undefined {
@@ -88,10 +71,6 @@ export class Context {
 
         const resolvedModule = ts.resolveModuleName(moduleName, parentPath, this.options || {}, MODULE_HOST);
         let resolvedModuleName = resolvedModule.resolvedModule && resolvedModule.resolvedModule.resolvedFileName;
-
-        // if (resolvedModuleName && resolvedModuleName[0] !== '/' && this.options['baseUrl']) {
-        //     resolvedModuleName = path.join(this.options['baseUrl'], resolvedModuleName);
-        // }
 
         return resolvedModuleName;
     }
@@ -143,13 +122,12 @@ export class Context {
         });
     }
 
-    static transpile(options: CompilerOptions, modulePath: string, parentContext?: Context): TranspilerOutput {
+    static transpile(options: CompilerOptions, modulePath: string, contents: string, parentContext?: Context): TranspilerOutput {
         let custom: Context;
 
-        const fileContents = ts.sys.readFile(modulePath);
         const config: tspoon.TranspilerConfig = {
             sourceFileName: modulePath,
-            compilerOptions: options,
+            compilerOptions: cloneTypescriptOptions(options),
             visitors: VISITORS,
             onBeforeTranspile: (ast: ts.SourceFile, context: VisitorContext) => {
                 custom = new Context(options, ast, parentContext);
@@ -157,9 +135,14 @@ export class Context {
             },
         };
 
-        const output: TranspilerOutput = tspoon.transpile(fileContents, config);
+        const output: TranspilerOutput = tspoon.transpile(contents, config);
         output.custom = custom;
         return output;
+    }
+
+    static transpileFile(options: CompilerOptions, filePath: string, parentContext?: Context): TranspilerOutput {
+        const fileContents = ts.sys.readFile(filePath);
+        return Context.transpile(options, filePath, fileContents, parentContext);
     }
 
     private importModule(resolvedModulePath: string): TranspilerOutput | undefined {
@@ -167,7 +150,7 @@ export class Context {
             // The file has already been imported, no need to import it again
         } else {
             // The file has not yet been imported, so import it here
-            return Context.transpile(this.options, resolvedModulePath, this);
+            return Context.transpileFile(this.options, resolvedModulePath, this);
         }
     }
 

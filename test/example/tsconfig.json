@@ -3,5 +3,9 @@
         "baseUrl": ".",
         "rootDir": ".",
         "noEmitHelpers": true
+    },
+    "packOptions": {
+        "wrapOutput": "%output%",
+        "emitCustomHandlers": true
     }
 }

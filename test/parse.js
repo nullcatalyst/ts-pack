@@ -3,15 +3,17 @@ const assert = require('assert');
 const tsPack = require('../lib/index');
 
 const COMPILER_OPTIONS = {
-    mangleId: function (fileName, id, mangle) {
-        let prefix = '_';
-        if (mangle === 'export' || mangle === 'default') prefix = 'export_';
-        if (mangle === 'node') prefix = 'node_';
+    packOptions: {
+        mangleId: function (fileName, id, mangle) {
+            let prefix = '_';
+            if (mangle === 'export' || mangle === 'default') prefix = 'export_';
+            if (mangle === 'node') prefix = 'node_';
 
-        let postfix = '_' + fileName;
-        if (mangle !== 'node') postfix = '_' + fileName.slice(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.'));
+            let postfix = '_' + fileName;
+            if (mangle !== 'node') postfix = '_' + fileName.slice(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.'));
 
-        return prefix + id + postfix;
+            return prefix + id + postfix;
+        }
     }
 };
 

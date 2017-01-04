@@ -16,7 +16,7 @@
     "build": "npm run clean && npm run bootstrap && npm run compress",
     "clean": "rm -rf lib index.js",
     "bootstrap": "tsc -p . && cp src/helpers.js lib/. && bin/tspack -p . src/main.ts -o index.js",
-    "compress": "uglifyjs --compress --mangle --wrap=tsPack -o index.js -- index.js"
+    "compress": "uglifyjs --compress --mangle -o index.js -- index.js"
   },
   "author": "Scott Bennett <scottbennett912@gmail.com>",
   "license": "ISC",

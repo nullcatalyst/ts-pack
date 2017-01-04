@@ -3,13 +3,15 @@ import * as path from 'path';
 import * as Promise from 'bluebird';
 import * as ts from 'typescript';
 import * as tspoon from './tspoon';
-import { CompilerOptions } from './util/compiler-options';
+import { CompilerOptions, setDefaultOptions } from './util/compiler-options';
 import { Context } from './context';
 
 export { CompilerOptions } from './util/compiler-options';
 
 const lstat = Promise.promisify<fs.Stats, string>(fs.lstat);
 const readFile = Promise.promisify<string, string, string>(fs.readFile);
+const HELPERS_FILE = path.resolve(__dirname, 'helpers.js');
+const OUTPUT_TOKEN = '%output%';
 
 const PARSE_CONFIG: ts.ParseConfigHost = {
     useCaseSensitiveFileNames: false,
@@ -27,57 +29,59 @@ export function parseConfig(fileName: string): Promise<CompilerOptions> {
                 throw result.error;
             } else {
                 const tsconfig = ts.parseJsonConfigFileContent(result.config, PARSE_CONFIG, path.dirname(fileName));
-                const options: CompilerOptions = tsconfig.options;
-
-                if (options.noEmitHelpers) {
-                    options.emitCustomHelpers = false;
-                } else {
-                    // In order to prevent the typescript compiler outputting the helper functions multiple times,
-                    // we tell the compiler not to emit the helpers, and we will include them ourselves.
-                    options.noEmitHelpers = true;
-                    options.emitCustomHelpers = true;
-                }
-
-                return options;
+                return setDefaultOptions(tsconfig.options, tsconfig.raw.packOptions);
             }
         });
 }
 
+function handleTranspile(options: CompilerOptions, handler: (helpers: string) => string) {
+    return function () {
+        return Promise.resolve()
+            .then(() => {
+                if (options.packOptions.emitCustomHelpers) {
+                    return readFile(HELPERS_FILE, 'utf8');
+                } else {
+                    return '';
+                }
+            })
+            .then(handler)
+            .then(output => {
+                const wrapOutput = options.packOptions.wrapOutput;
+                if (wrapOutput) {
+                    let index = wrapOutput.indexOf(OUTPUT_TOKEN);
+                    output = wrapOutput.substring(0, index) + output + wrapOutput.substring(index + OUTPUT_TOKEN.length);
+                }
+
+                return output;
+            });
+    }
+}
+
 export function compileFile(fileName: string, options?: CompilerOptions): Promise<string> {
     // Use the default options if none were supplied
-    options = options || {};
-
+    options = setDefaultOptions(options);
     const filePath = path.resolve(fileName);
+
     return lstat(filePath)
         .then((stats: fs.Stats) => {
             if (!stats.isFile()) {
                 throw new Error(`Could not read from file "${filePath}"`);
             }
         })
-        .then(() => {
-            if (options.emitCustomHelpers) {
-                return readFile(path.resolve(__dirname, 'helpers.js'), 'utf8');
-            } else {
-                return '';
-            }
-        })
-        .then((helpers) => {
-            const output = Context.transpile(options, filePath);
+        .then(handleTranspile(options, (helpers: string): string => {
+            const output = Context.transpileFile(options, filePath);
             return helpers + output.code;
-        });
+        }));
 }
 
 export function compile(fileName: string, contents: string, options?: CompilerOptions): Promise<string> {
     // Use the default options if none were supplied
-    options = options || {};
-
+    options = setDefaultOptions(options);
     fileName = path.resolve(fileName);
-    return new Promise<string>((resolve, reject) => {
-            try {
-                const output = Context.transpile(options, fileName);
-                resolve(output.code);
-            } catch (error) {
-                reject(error);
-            }
-        });
+
+    return Promise.resolve()
+        .then(handleTranspile(options, (helpers: string): string => {
+            const output = Context.transpileFile(options, fileName);
+            return helpers + output.code;
+        }));
 }
