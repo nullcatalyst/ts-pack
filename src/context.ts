@@ -114,8 +114,17 @@ export class Context {
         return mangledId;
     }
 
-    addDefault(id: string): void {
-        this.exports[''] = this.ids[id] as string;
+    addDefault(id?: string): string {
+        let mangledId: string;
+
+        if (id) {
+            mangledId = this.ids[id] as string;
+        } else {
+            mangledId = this.mangleId('', 'default');
+        }
+
+        this.exports[''] = mangledId;
+        return mangledId;
     }
 
     getId(id: string, property?: string): string | undefined {
@@ -126,6 +135,12 @@ export class Context {
                 if (typeof this.ids[id] === 'string') return this.ids[id] as string;
             }
         }
+    }
+
+    addExport(exportedProps: ImportedPropertyName[]): void {
+        exportedProps.forEach(([ exportedProp, exportedPropAs ]) => {
+            this.exports[exportedPropAs] = this.ids[exportedProp] as string;
+        });
     }
 
     static transpile(options: CompilerOptions, modulePath: string, parentContext?: Context): TranspilerOutput {
@@ -156,7 +171,7 @@ export class Context {
         }
     }
 
-    addImport(moduleName: string, importedAs: string | ImportedPropertyName[], _default: boolean): TranspilerOutput | string | undefined {
+    addImportModule(moduleName: string, importedAs: string | ImportedPropertyName[], _default: boolean): TranspilerOutput | string | undefined {
         let resolvedModulePath = this.resolveModule(moduleName, this.sourceFile.fileName);
         const nodeModule = this.isNodeModule(resolvedModulePath || moduleName);
         if (!resolvedModulePath && !nodeModule) return;
@@ -201,7 +216,9 @@ export class Context {
         }
     }
 
-    addExport(moduleName: string, exportedProps?: ImportedPropertyName[]): TranspilerOutput | string | undefined {
+    addExportModule(moduleName: string): TranspilerOutput | string | undefined;
+    addExportModule(moduleName: string, exportedProps: ImportedPropertyName[]): TranspilerOutput | undefined;
+    addExportModule(moduleName: string, exportedProps?: ImportedPropertyName[]): TranspilerOutput | string | undefined {
         let resolvedModulePath = this.resolveModule(moduleName, this.sourceFile.fileName);
         const nodeModule = this.isNodeModule(resolvedModulePath || moduleName);
         if (!resolvedModulePath && !nodeModule) return;
@@ -216,13 +233,13 @@ export class Context {
         } else {
             const output = this.importModule(resolvedModulePath);
 
-            if (!exportedProps) {
-                // Copy all of the exports over
-                Object.assign(this.exports, (this.imports[resolvedModulePath] as Context).exports);
-            } else {
+            if (exportedProps) {
                 exportedProps.forEach(([ exportedProp, exportedPropAs ]) => {
                     this.exports[exportedPropAs] = (this.imports[resolvedModulePath] as Context).exports[exportedProp];
                 });
+            } else {
+                // Copy all of the exports over
+                Object.assign(this.exports, (this.imports[resolvedModulePath] as Context).exports);
             }
 
             return output;

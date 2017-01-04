@@ -29,9 +29,14 @@ export function parseConfig(fileName: string): Promise<CompilerOptions> {
                 const tsconfig = ts.parseJsonConfigFileContent(result.config, PARSE_CONFIG, path.dirname(fileName));
                 const options: CompilerOptions = tsconfig.options;
 
-                // In order to prevent the typescript compiler outputting the helper functions multiple times,
-                // we tell the compiler not to emit the helpers, and we will include them ourselves.
-                options.noEmitHelpers = true;
+                if (options.noEmitHelpers) {
+                    options.emitCustomHelpers = false;
+                } else {
+                    // In order to prevent the typescript compiler outputting the helper functions multiple times,
+                    // we tell the compiler not to emit the helpers, and we will include them ourselves.
+                    options.noEmitHelpers = true;
+                    options.emitCustomHelpers = true;
+                }
 
                 return options;
             }
@@ -50,11 +55,11 @@ export function compileFile(fileName: string, options?: CompilerOptions): Promis
             }
         })
         .then(() => {
-            // if (emitHelpers) {
+            if (options.emitCustomHelpers) {
                 return readFile(path.resolve(__dirname, 'helpers.js'), 'utf8');
-            // } else {
-            //     return '';
-            // }
+            } else {
+                return '';
+            }
         })
         .then((helpers) => {
             const output = Context.transpile(options, filePath);

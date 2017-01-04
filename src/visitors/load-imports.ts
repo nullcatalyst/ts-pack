@@ -24,7 +24,7 @@ const impl: tspoon.Visitor = {
                 // import <importedName> from <modulePath>
                 let importedAs = node.importClause.name.getText();
 
-                const output = context.custom.addImport(moduleName, importedAs, true);
+                const output = context.custom.addImportModule(moduleName, importedAs, true);
                 if (output) {
                     replace(output, true);
                     return;
@@ -36,7 +36,7 @@ const impl: tspoon.Visitor = {
                     // import * as <importedAs> from <modulePath>
                     let importedAs = node.importClause.namedBindings.name.getText();
 
-                    const output = context.custom.addImport(moduleName, importedAs, false);
+                    const output = context.custom.addImportModule(moduleName, importedAs, false);
                     if (output) {
                         replace(output);
                         return;
@@ -50,7 +50,7 @@ const impl: tspoon.Visitor = {
                         return [importedName, importedAs];
                     });
 
-                    const output = context.custom.addImport(moduleName, importedProperties, false);
+                    const output = context.custom.addImportModule(moduleName, importedProperties, false);
                     if (output) {
                         replace(output);
                         return;

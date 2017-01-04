@@ -1,12 +1,13 @@
-import * as typescript from 'typescript';
+import * as ts from 'typescript';
 import * as tspoon from '../tspoon';
 import { VisitorContext, Context } from '../context';
 
 const impl: tspoon.Visitor = {
-    filter: function filter(node: typescript.Node) {
-        return node.kind === typescript.SyntaxKind.ExportDeclaration;
+    filter: function filter(node: ts.Node) {
+        return node.kind === ts.SyntaxKind.ExportDeclaration
+            && !!(node as ts.ExportDeclaration).moduleSpecifier;
     },
-    visit: function visit(node: typescript.ExportDeclaration, context: VisitorContext) {
+    visit: function visit(node: ts.ExportDeclaration, context: VisitorContext) {
         // This is the module to be loaded, after removing the quotes
         let moduleName = node.moduleSpecifier.getText().slice(1, -1);
 
@@ -21,7 +22,7 @@ const impl: tspoon.Visitor = {
             });
         }
 
-        const output = context.custom.addExport(moduleName, exportedProperties);
+        const output = context.custom.addExportModule(moduleName, exportedProperties);
         if (output) {
             if (typeof output === 'string') {
                 context.replace(node.getStart(), node.getEnd(), `import ${output} from ${node.moduleSpecifier.getText()};`);

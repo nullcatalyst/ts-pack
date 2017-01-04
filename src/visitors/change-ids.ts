@@ -6,6 +6,7 @@ const impl: tspoon.Visitor = {
     filter: function filter(node: ts.Node) {
         return node.kind === ts.SyntaxKind.Identifier
             && node.parent.kind !== ts.SyntaxKind.ExportAssignment    // export default X; -OR- export = X;
+            && node.parent.kind !== ts.SyntaxKind.ExportSpecifier     // export { X }; -OR- export { Y as X };
             && node.parent.kind !== ts.SyntaxKind.ImportClause        // import X from <module>;
             && node.parent.kind !== ts.SyntaxKind.ImportSpecifier     // import { X as Y } from <module>;
             && node.parent.kind !== ts.SyntaxKind.NamespaceImport     // import * as X from <module>;

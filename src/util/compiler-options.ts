@@ -4,6 +4,15 @@ export type CompilerOptions = ts.CompilerOptions & AdditionalCompilerOptions;
 
 export type MangleType = 'private' | 'export' | 'node' | 'default';
 
+export enum Mangle {
+    Private,
+    Public,
+    Default,
+    Node,
+};
+
 export interface AdditionalCompilerOptions {
-    mangleId?(fileName: string, id: string, mangle: MangleType): string
+    emitCustomHelpers?: boolean;
+
+    mangleId?(fileName: string, id: string, mangle: MangleType): string;
 }
