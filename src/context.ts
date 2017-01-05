@@ -63,7 +63,7 @@ export class Context {
 
     /** Mangles the identifier, creating a globally unique name */
     private mangleId(id: string, mangle: Mangle, fileName?: string): string {
-        return this.options.packOptions.mangleId(fileName || this.sourceFile.fileName, id, mangle);
+        return this.options.packOptions.mangleId(fileName || this.sourceFile.fileName, id, mangle, this.options);
     }
 
     private resolveModule(moduleName: string, parentPath?: string): string | undefined {

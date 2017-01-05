@@ -13,7 +13,10 @@ export interface PackOptions {
     emitCustomHelpers?: boolean;
     wrapOutput?: string;
 
-    mangleId?(fileName: string, id: string, mangle: Mangle): string;
+    /** Alias or preserve specific identifier names. USE WITH CARE. */
+    alias?: { [id: string]: string };
+
+    mangleId?(fileName: string, id: string, mangle: Mangle, options?: CompilerOptions): string;
 }
 
 /**
@@ -55,7 +58,13 @@ export function cloneTypescriptOptions(options: CompilerOptions): ts.CompilerOpt
     return tsOptions;
 }
 
-function defaultMangleId(fileName: string, id: string, mangle: Mangle): string {
+function defaultMangleId(fileName: string, id: string, mangle: Mangle, options?: CompilerOptions): string {
+    if (options && options.packOptions && options.packOptions.alias) {
+        if (id in options.packOptions.alias) {
+            return options.packOptions.alias[id];
+        }
+    }
+
     let prefix: string;
     switch (mangle) {
         case Mangle.Internal:         prefix = 'prvt$'; break;
