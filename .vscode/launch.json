@@ -20,7 +20,7 @@
             "args": [
                 "-p",
                 "${workspaceRoot}/test/example/tsconfig.json",
-                "test/example/i.ts"
+                "test/example/j.tsx"
 
                 // "-p",
                 // "${workspaceRoot}/tsconfig.json",

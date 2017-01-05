@@ -67,5 +67,11 @@ function defaultMangleId(fileName: string, id: string, mangle: Mangle): string {
     const extIndex = fileName.lastIndexOf('.');
     const postfix = '$' + (extIndex >= 0 ? fileName.substr(0, fileName.lastIndexOf('.')) : fileName).replace(/[^a-z0-9]/gmi, '_');
 
+    // If the first letter is an uppercase, keep it as an uppercase
+    // This avoids some issues when using this transpiler with React
+    if (id && id[0] === id[0].toUpperCase()) {
+        prefix = prefix[0].toUpperCase() + prefix.slice(1);
+    }
+
     return prefix + id + postfix;
 }
