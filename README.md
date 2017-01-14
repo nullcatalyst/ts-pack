@@ -44,6 +44,51 @@ tspack --help    # Open the help; -h also works
 tspack --version # Output the current version, including the version of the included typescript
 ```
 
+## Additional `tsconfig.json` File options
+
+This project supports adding additional options into the tsconfig file passed to it.
+
+``` javascript
+{
+    "compilerOptions": { ... },
+
+    /**
+     * This object contains all of the additional options that are used by this transpiler.
+     */
+    "packOptions": {
+        /**
+         * Typescript emits its special handler functions once per input file that uses them.
+         * setting this to `true` will enable outputting a single custom version of the handlers
+         * at the top of the file.
+         *
+         * @default false
+         */
+        "emitCustomHandlers": false,
+
+        /**
+         * Provides an easy way to wrap the entire output in a immediately-invoked function expression (IIFE).
+         * This typically allows the minifier to do a better job.
+         * This can be any string, where the substring '%output%' is replaced with the transpiled file contents.
+         *
+         * @default "%output%"
+         */
+        "wrapOutput": "(function(){%output%})();",
+
+        /**
+         * Provides a way to explicitly exclude imports from the transpilation process.
+         * Any import found in this list will stay treated as a regular `require()`.
+         *
+         * @default []
+         */
+        "excludeImports": [
+            "bluebird",
+            "lodash",
+            ...
+        ]
+    }
+}
+```
+
 ## Some notable caveats
 
 1. It does not support importing via the `require()` function. Any call to `require()` will stay as such, and will not get merged. *This may be changed at a later date.*
