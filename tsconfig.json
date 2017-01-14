@@ -15,6 +15,14 @@
     ],
     "packOptions": {
         "emitCustomHandlers": true,
-        "wrapOutput": "(function(){%output%})();"
+        "wrapOutput": "(function(){%output%})();",
+        "excludeImports": [
+            "bluebird",
+            "builtin-modules",
+            "magic-string",
+            "node-getopt",
+            "source-map",
+            "typescript"
+        ]
     }
 }

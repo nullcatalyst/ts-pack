@@ -45,10 +45,11 @@ export class Context {
      */
     private exports: MapLike<string | MapLike<string>>;
 
-    /**
-     * This maps the full resolved source file name to the map of variables it exports
-     */
+    /** This maps the full resolved source file name to the map of variables it exports */
     private imports: MapLike<Context | string>;
+
+    /** An arbitrary hash of the source file. This can be used to mangle the identifiers */
+    private hash: string;
 
     constructor(options: CompilerOptions, sourceFile: ts.SourceFile, parent?: Context) {
         this.options    = options;
@@ -59,11 +60,13 @@ export class Context {
         this.imports    = parent ? parent.imports : {};
 
         this.imports[sourceFile.fileName] = this;
+
+        this.hash = options.packOptions.hash(sourceFile);
     }
 
     /** Mangles the identifier, creating a globally unique name */
     private mangleId(id: string, mangle: Mangle, fileName?: string): string {
-        return this.options.packOptions.mangleId(fileName || this.sourceFile.fileName, id, mangle, this.options);
+        return this.options.packOptions.mangleId(fileName || this.hash, id, mangle, this.options);
     }
 
     private resolveModule(moduleName: string, parentPath?: string): string | undefined {
@@ -72,11 +75,17 @@ export class Context {
         const resolvedModule = ts.resolveModuleName(moduleName, parentPath, this.options || {}, MODULE_HOST);
         let resolvedModuleName = resolvedModule.resolvedModule && resolvedModule.resolvedModule.resolvedFileName;
 
+        // Don't import declaration files
+        if (resolvedModuleName && (resolvedModuleName.endsWith('.d.ts') || resolvedModuleName.endsWith('.js'))) {
+            resolvedModuleName = moduleName;
+        }
+
         return resolvedModuleName;
     }
 
     private isNodeModule(modulePath: string): boolean {
-        if (builtinModules.indexOf(modulePath) >= 0) {
+        const excludeImports = this.options.packOptions.excludeImports;
+        if (builtinModules.indexOf(modulePath) >= 0 || (excludeImports && excludeImports.indexOf(modulePath) >= 0)) {
             return true;
         } else {
             return modulePath.indexOf('/node_modules/') >= 0 || modulePath.indexOf('node_modules/') === 0;

@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as ts from 'typescript';
 
 export type CompilerOptions = ts.CompilerOptions & { packOptions?: PackOptions };
@@ -16,7 +17,11 @@ export interface PackOptions {
     /** Alias or preserve specific identifier names. USE WITH CARE. */
     alias?: { [id: string]: string };
 
-    mangleId?(fileName: string, id: string, mangle: Mangle, options?: CompilerOptions): string;
+    /** List of import names to exclude -- treat tham as a node module, and retain the import */
+    excludeImports?: string[];
+
+    hash?(source: string | ts.SourceFile): string;
+    mangleId?(hash: string, id: string, mangle: Mangle, options?: CompilerOptions): string;
 }
 
 /**
@@ -34,13 +39,13 @@ export function setDefaultOptions(options?: ts.CompilerOptions, packOptions?: Pa
             options.noEmitHelpers = true;
         }
 
-        if (!packOptions.mangleId) {
-            packOptions.mangleId = defaultMangleId;
-        }
+        if (!packOptions.hash)     packOptions.hash     = defaultHash;
+        if (!packOptions.mangleId) packOptions.mangleId = defaultMangleId;
     } else {
         options.noEmitHelpers = true;
         packOptions = {
             emitCustomHelpers: true,
+            hash: defaultHash,
             mangleId: defaultMangleId,
         };
     }
@@ -58,29 +63,35 @@ export function cloneTypescriptOptions(options: CompilerOptions): ts.CompilerOpt
     return tsOptions;
 }
 
-function defaultMangleId(fileName: string, id: string, mangle: Mangle, options?: CompilerOptions): string {
+function defaultHash(source: string | ts.SourceFile): string {
+    if (typeof source === 'string') {
+        const extIndex = source.lastIndexOf('.');
+        return (extIndex >= 0 ? source.substr(0, extIndex) : source).replace(/[^a-z0-9]/gmi, '_');
+    } else {
+        // Hash the source contents using the SHA-1 hash algorithm
+        return crypto
+            .createHash('sha1')
+            .update(source.getText(), 'utf8')
+            .digest('hex');
+    }
+}
+
+function defaultMangleId(hash: string, id: string, mangle: Mangle, options?: CompilerOptions): string {
     if (options && options.packOptions && options.packOptions.alias) {
         if (id in options.packOptions.alias) {
             return options.packOptions.alias[id];
         }
     }
 
-    let prefix: string;
+    let postfix: string;
     switch (mangle) {
-        case Mangle.Internal:         prefix = 'prvt$'; break;
+        case Mangle.Internal:         postfix = '$i$'; break;
         case Mangle.Export:           // fallthrough;
-        case Mangle.DefaultExport:    prefix = 'pblc$'; break;
-        case Mangle.NodeModuleImport: prefix = 'node$'; break;
+        case Mangle.DefaultExport:    postfix = '$x$'; break;
+        case Mangle.NodeModuleImport: postfix = '$n$'; break;
     }
 
-    const extIndex = fileName.lastIndexOf('.');
-    const postfix = '$' + (extIndex >= 0 ? fileName.substr(0, fileName.lastIndexOf('.')) : fileName).replace(/[^a-z0-9]/gmi, '_');
+    postfix += hash.replace(/[^a-z0-9]/gmi, '_');
 
-    // If the first letter is an uppercase, keep it as an uppercase
-    // This avoids some issues when using this transpiler with React
-    if (id && id[0] === id[0].toUpperCase()) {
-        prefix = prefix[0].toUpperCase() + prefix.slice(1);
-    }
-
-    return prefix + id + postfix;
+    return id + postfix;
 }

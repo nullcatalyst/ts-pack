@@ -6,29 +6,32 @@ const COMPILER_OPTIONS = {
     jsx: 2,
 
     packOptions: {
-        mangleId: function (fileName, id, mangle) {
-            let prefix = 'i_';
-            if (mangle === 1 || mangle === 2) prefix = 'x_';
-            if (mangle === 3) prefix = 'n_';
-
-            let postfix = '_' + fileName;
-            if (mangle !== 3) postfix = '_' + fileName.slice(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.'));
-
-            if (id && id[0] === id[0].toUpperCase()) {
-                prefix = prefix.toUpperCase();
+        hash: function (source) {
+            if (typeof source === 'string') {
+                return source;
+            } else {
+                const fileName = source.fileName;
+                return fileName.slice(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.'));
             }
+        },
+        mangleId: function (hash, id, mangle) {
+            let postfix = '$i$'; // Internal
+            if (mangle === 1 || mangle === 2) postfix = '$x$'; // Export
+            if (mangle === 3) postfix = '$n$'; // Node
 
-            return prefix + id + postfix;
+            postfix += hash;
+
+            return id + postfix;
         }
     }
 };
 
-const A_OUTPUT = 'var x_i_a = 0;\nfunction x__a() { return 1; }\nvar i_o_a = { a: { b: 0 } };\ni_o_a.a.b;\n';
-const B_OUTPUT = 'x_i_a < x__a();\n'
-const C_OUTPUT = 'function x_fn_c() { return x_fn_d(); }\n';
-const D_OUTPUT = 'function x_fn_d() { return 4; }\n';
-const G_OUTPUT = 'var i_b_g = 2;\nvar x__g = \'test\';\n';
-const J_OUTPUT = 'function I_Test_j() { }\nReact.createElement(I_Test_j, null);\n';
+const A_OUTPUT = 'var i$x$a = 0;\nfunction $x$a() { return 1; }\nvar o$i$a = { a: { b: 0 } };\no$i$a.a.b;\n';
+const B_OUTPUT = 'i$x$a < $x$a();\n'
+const C_OUTPUT = 'function fn$x$c() { return fn$x$d(); }\n';
+const D_OUTPUT = 'function fn$x$d() { return 4; }\n';
+const G_OUTPUT = 'var b$i$g = 2;\nvar $x$g = \'test\';\n';
+const J_OUTPUT = 'function Test$i$j() { }\nReact.createElement(Test$i$j, null);\n';
 
 describe('tsPack', function () {
     it('should handle single files', function () {

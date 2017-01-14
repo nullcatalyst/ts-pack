@@ -5,12 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "node",
+            "type": "node2",
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceRoot}/lib/main.js",
             "cwd": "${workspaceRoot}",
-            // "sourceMaps": true,
+            "sourceMaps": true,
             // "outFiles": [
             //     "${workspaceRoot}/lib/**"
             // ],
@@ -18,13 +18,13 @@
                 "NODE_PATH": "${workspaceRoot}/lib"
             },
             "args": [
-                "-p",
-                "${workspaceRoot}/test/example/tsconfig.json",
-                "test/example/j.tsx"
-
                 // "-p",
-                // "${workspaceRoot}/tsconfig.json",
-                // "src/main.ts"
+                // "${workspaceRoot}/test/example/tsconfig.json",
+                // "test/example/j.tsx"
+
+                "-p",
+                "${workspaceRoot}/tsconfig.json",
+                "src/main.ts"
             ]
         },
         {
