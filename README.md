@@ -66,6 +66,30 @@ This project supports adding additional options into the tsconfig file passed to
         "emitCustomHandlers": false,
 
         /**
+         * A set of identifiers that should not be mangled. Instead, these identifiers are replaced by their
+         * corresponding value. This is useful for using variables declared in another file, as well as swapping
+         * out an entire imported library.
+         *
+         * @default {}
+         */
+        "alias": {
+            "React": "React",
+            "database/impl": "database/mongo",
+            ...
+        },
+
+        /**
+         * A set of raw text replacements to perform after the transiling process is complete.
+         *
+         * @default {}
+         */
+        "replace": {
+            "searchFor": "replaceWith",
+            "process.env.NODE_ENV": "production",
+            ...
+        },
+
+        /**
          * Provides an easy way to wrap the entire output in a immediately-invoked function expression (IIFE).
          * This typically allows the minifier to do a better job.
          * This can be any string, where the substring '%output%' is replaced with the transpiled file contents.
