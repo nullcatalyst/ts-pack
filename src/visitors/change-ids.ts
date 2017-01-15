@@ -12,6 +12,7 @@ const impl: tspoon.Visitor = {
             && node.parent.kind !== ts.SyntaxKind.NamespaceImport     // import * as X from <module>;
             && node.parent.kind !== ts.SyntaxKind.MethodDeclaration   // class Y { X() { ... } };
             && node.parent.kind !== ts.SyntaxKind.PropertyDeclaration // class Y { X: string };
+            && (node.parent.kind !== ts.SyntaxKind.PropertyAssignment || node !== (node.parent as ts.PropertyAssignment).name)
             && ( // Y.X;
                 node.parent.kind !== ts.SyntaxKind.PropertyAccessExpression
                 || (node.parent as ts.PropertyAccessExpression).expression === node

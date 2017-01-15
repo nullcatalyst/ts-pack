@@ -93,4 +93,12 @@ describe('tsPack', function () {
                 assert.equal(output, A_OUTPUT);
             });
     });
+
+    it('should not rename object properties', function () {
+        return tsPack.compileFile('test/example/l.ts', COMPILER_OPTIONS)
+            .then(output => {
+                console.log(output);
+                // assert.equal(output, A_OUTPUT);
+            });
+    });
 });

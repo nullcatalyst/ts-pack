@@ -182,6 +182,7 @@ export class Context {
         const nodeModule = this.isNodeModule(resolvedModulePath || moduleName);
         if (!resolvedModulePath && !nodeModule) return;
 
+        try {
         if (nodeModule) {
             resolvedModulePath = resolvedModulePath || moduleName;
 
@@ -223,6 +224,10 @@ export class Context {
             }
 
             return output;
+        }
+        } catch (error) {
+            console.error('Failed to load module', moduleName, 'at path', resolvedModulePath);
+            console.error(error);
         }
     }
 
