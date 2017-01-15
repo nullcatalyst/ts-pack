@@ -20,17 +20,13 @@
             "name": "Launch Program",
             "program": "${workspaceRoot}/lib/main.js",
             "cwd": "${workspaceRoot}",
-            "sourceMaps": true,
-            // "outFiles": [
-            //     "${workspaceRoot}/lib/**"
-            // ],
             "env": {
                 "NODE_PATH": "${workspaceRoot}/lib"
             },
             "args": [
                 "-p",
                 "${workspaceRoot}/test/example/tsconfig.json",
-                "test/example/k.ts"
+                "test/example/h.ts"
 
                 // "-p",
                 // "${workspaceRoot}/tsconfig.json",
