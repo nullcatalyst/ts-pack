@@ -85,4 +85,12 @@ describe('tsPack', function () {
                 assert.equal(output, J_OUTPUT);
             });
     });
+
+    it('should handle raw inclusion (not actually importing values)', function () {
+        return tsPack.compileFile('test/example/k.ts', COMPILER_OPTIONS)
+            .then(output => {
+                // console.log(output);
+                assert.equal(output, A_OUTPUT);
+            });
+    });
 });

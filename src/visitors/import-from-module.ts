@@ -57,6 +57,12 @@ const impl: tspoon.Visitor = {
                     }
                 }
             }
+        } else {
+            const output = context.custom.addImportModule(moduleName, null, true);
+            if (output) {
+                replace(output, true);
+                return;
+            }
         }
 
         // Remove the import

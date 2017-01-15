@@ -177,7 +177,7 @@ export class Context {
         }
     }
 
-    addImportModule(moduleName: string, importedAs: string | ImportedPropertyName[], _default: boolean): TranspilerOutput | string | undefined {
+    addImportModule(moduleName: string, importedAs: null | string | ImportedPropertyName[], _default: boolean): TranspilerOutput | string | undefined {
         let resolvedModulePath = this.resolveModule(moduleName, this.sourceFile.fileName);
         const nodeModule = this.isNodeModule(resolvedModulePath || moduleName);
         if (!resolvedModulePath && !nodeModule) return;
@@ -186,7 +186,9 @@ export class Context {
             resolvedModulePath = resolvedModulePath || moduleName;
 
             const assignIds = (id: string) => {
-                if (typeof importedAs === 'string') {
+                if (importedAs === null) {
+                    // Do nothing; this is a simple inclusion: "import <module>;"
+                } else if (typeof importedAs === 'string') {
                     this.ids[importedAs] = id;
                 } else if (typeof importedAs === 'object') {
                     importedAs.forEach(importedProperty => {
@@ -206,7 +208,9 @@ export class Context {
         } else {
             const output = this.importModule(resolvedModulePath);
 
-            if (typeof importedAs === 'string') {
+            if (importedAs === null) {
+                // Do nothing; this is a simple inclusion: "import <module>;"
+            } else if (typeof importedAs === 'string') {
                 if (_default) {
                     this.ids[importedAs] = (this.imports[resolvedModulePath] as Context).exports[''];
                 } else {

@@ -44,7 +44,7 @@ tspack --help    # Open the help; -h also works
 tspack --version # Output the current version, including the version of the included typescript
 ```
 
-## Additional `tsconfig.json` File options
+## Additional `tsconfig.json` File Options
 
 This project supports adding additional options into the tsconfig file passed to it.
 
