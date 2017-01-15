@@ -57,6 +57,15 @@ const impl: tspoon.Visitor = {
 
                         case ts.SyntaxKind.AmpersandToken: // Bitwise And
                             return handleNode(binExprNode.left) & handleNode(binExprNode.right);
+
+                        case ts.SyntaxKind.LessThanLessThanToken: // Bitwise Shift Left
+                            return handleNode(binExprNode.left) << handleNode(binExprNode.right);
+
+                        case ts.SyntaxKind.GreaterThanGreaterThanToken: // Bitwise Shift Right
+                            return handleNode(binExprNode.left) >> handleNode(binExprNode.right);
+
+                        case ts.SyntaxKind.GreaterThanGreaterThanGreaterThanToken: // Arithmetic Shift Right
+                            return handleNode(binExprNode.left) >>> handleNode(binExprNode.right);
                     }
                 }
 
