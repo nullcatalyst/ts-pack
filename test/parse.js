@@ -101,4 +101,12 @@ describe('tsPack', function () {
                 // assert.equal(output, A_OUTPUT);
             });
     });
+
+    it('should not handle export all from', function () {
+        return tsPack.compileFile('test/example/n.ts', COMPILER_OPTIONS)
+            .then(output => {
+                console.log(output);
+                // assert.equal(output, A_OUTPUT);
+            });
+    });
 });

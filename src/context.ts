@@ -72,6 +72,10 @@ export class Context {
     private resolveModule(moduleName: string, parentPath?: string): string | undefined {
         parentPath = parentPath || '';
 
+        if (this.options.packOptions.alias && moduleName in this.options.packOptions.alias) {
+            moduleName = this.options.packOptions.alias[moduleName];
+        }
+
         const resolvedModule = ts.resolveModuleName(moduleName, parentPath, this.options || {}, MODULE_HOST);
         let resolvedModuleName = resolvedModule.resolvedModule && resolvedModule.resolvedModule.resolvedFileName;
 

@@ -17,6 +17,9 @@ export interface PackOptions {
     /** Alias or preserve specific identifier names. USE WITH CARE. */
     alias?: { [id: string]: string };
 
+    /** Raw strings to do a search and replace. This is done after all other transpiling. USE WITH CARE. */
+    replace?: { [id: string]: string };
+
     /** List of import names to exclude -- treat tham as a node module, and retain the import */
     excludeImports?: string[];
 

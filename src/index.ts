@@ -46,6 +46,14 @@ function handleTranspile(options: CompilerOptions, handler: (helpers: string) =>
             })
             .then(handler)
             .then(output => {
+                const replace = options.packOptions.replace;
+                if (replace) {
+                    for (let searchFor in replace) {
+                        const replaceWith = replace[searchFor];
+                        output = output.replace(new RegExp(escapeRegExp(searchFor), 'g'), replaceWith);
+                    }
+                }
+
                 const wrapOutput = options.packOptions.wrapOutput;
                 if (wrapOutput) {
                     let index = wrapOutput.indexOf(OUTPUT_TOKEN);
@@ -84,4 +92,8 @@ export function compile(fileName: string, contents: string, options?: CompilerOp
             const output = Context.transpileFile(options, fileName);
             return helpers + output.code;
         }));
+}
+
+function escapeRegExp(s: string) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
 }
